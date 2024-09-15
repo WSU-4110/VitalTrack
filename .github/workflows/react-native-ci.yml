@@ -1,0 +1,44 @@
+name: React Native Frontend
+
+on:
+  push:
+    branches: [ "MaryJabro" ]
+  pull_request:
+    branches: [ "MaryJabro" ]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    # Set up Node.js for the React Native environment
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: "16"
+
+    # Install dependencies
+    - name: Install dependencies
+      run: |
+        npm install
+
+    # Run ESLint to check for code style and errors
+    - name: Lint with ESLint
+      run: |
+        npm run lint
+
+    # Run Jest or another test framework
+    - name: Test with Jest
+      run: |
+        npm run test
+
+    # Build the project (useful if your app builds in CI)
+    - name: Build the project
+      run: |
+        npm run build
