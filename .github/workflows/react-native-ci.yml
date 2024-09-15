@@ -1,48 +1,55 @@
-name: Android APK Build and Test
+name: React Native Frontend CI
 
 on:
   push:
-    branches: [ "MaryJabro" ]
+    branches:
+      - MaryJabro  
   pull_request:
-    branches: [ "MaryJabro" ]
+    branches:
+      - MaryJabro 
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
+    # Step 1: Checkout the repository
+    - name: Checkout repository
+      uses: actions/checkout@v4
 
-    # Set up JDK 17 for Android
+    # Step 2: Set up Node.js version 18
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+
+    # Step 3: Install Node.js dependencies
+    - name: Install Node.js dependencies
+      run: npm install
+      working-directory: VitalTrackApp
+
+    # Step 4: Run Unit Tests using Jest
+    - name: Run Unit Tests
+      run: npm run test
+      working-directory: VitalTrackApp
+
+    # Step 5: Set up JDK 17 for Android
     - name: Set up JDK 17
       uses: actions/setup-java@v3
       with:
         java-version: '17'
         distribution: 'temurin'
 
-    # Set up Node.js for React Native
-    - name: Set up Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: '16'
+    # Step 6: Set up Android SDK
+    - name: Install Android SDK
+      run: sudo apt-get update && sudo apt-get install -y openjdk-17-jdk-headless android-sdk
 
-    # Install Node.js dependencies 
-    - name: Install Node.js dependencies
-      working-directory: VitalTrackApp  
-      run: |
-        npm install
+    # Step 7: Accept Android SDK licenses
+    - name: Accept Android SDK Licenses
+      run: yes | sdkmanager --licenses
 
-    # Run Jest Unit Tests 
-    - name: Run Unit Tests
-      working-directory: VitalTrackApp  
-      run: |
-        npm run test
-
-    # Build the Android APK (ensure the correct working directory)
+    # Step 8: Build Android APK
     - name: Build Android APK
-      working-directory: VitalTrackApp/android  
-      run: |
-        ./gradlew assembleDebug
+      run: ./gradlew assembleDebug
+      working-directory: VitalTrackApp/android
 
- 
