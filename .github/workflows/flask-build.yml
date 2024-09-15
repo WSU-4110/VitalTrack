@@ -1,0 +1,43 @@
+name: Build Flask Application (VitalTrackServer)
+
+on:
+  push:
+    branches:
+      - main
+      - '*'
+  pull_request:
+    branches:
+      - main
+      - '*'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: ./VitalTrackServer
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+
+      - name: Install dependencies
+        run: |
+          python -m venv venv
+          source venv/bin/activate
+          pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Set up environment variables
+        run: echo "FLASK_APP=VitalTrackServer/app.py" >> $GITHUB_ENV
+
+      - name: Build and Run Flask Application
+        run: |
+          source venv/bin/activate
+          flask run --host=0.0.0.0 --port=5000
