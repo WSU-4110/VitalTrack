@@ -19,6 +19,7 @@ jobs:
       uses: actions/setup-java@v3
       with:
         java-version: '11'
+        distribution: 'temurin'  # Specify the Java distribution
 
     # Set up Node.js for React Native
     - name: Set up Node.js
