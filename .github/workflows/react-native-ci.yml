@@ -23,22 +23,26 @@ jobs:
       with:
         node-version: "16"
 
-    # Install dependencies
+    # Install dependencies 
     - name: Install dependencies
+      working-directory: VitalTrackApp  
       run: |
         npm install
 
-    # Run ESLint to check for code style and errors
+    # Run ESLint in the correct directory
     - name: Lint with ESLint
+      working-directory: VitalTrackApp  
       run: |
         npm run lint
 
-    # Run Jest or another test framework
+    # Run Jest 
     - name: Test with Jest
+      working-directory: VitalTrackApp  
       run: |
         npm run test
 
-    # Build the project (useful if your app builds in CI)
+    #  Build the project
     - name: Build the project
+      working-directory: VitalTrackApp  
       run: |
         npm run build
