@@ -38,7 +38,7 @@ jobs:
       run: |
         npm run test
 
-    # Build the project (useful if your app builds in CI)
+    # Build the project 
     - name: Build the project
       run: |
         npm run build
