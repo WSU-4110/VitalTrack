@@ -3,11 +3,9 @@ name: React Native Frontend CI
 
 on:
   push:
-    branches:
-      - MaryJabro  # Temporary for testing: Adjust to main before pushing to main
+    branches: [ "main" ]
   pull_request:
-    branches:
-      - MaryJabro  #Temporary for testing:  Adjust to main before pushing to main
+    branches: [ "main" ]
 
 jobs:
   build:
