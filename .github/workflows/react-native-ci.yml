@@ -4,44 +4,44 @@ name: React Native Frontend CI
 on:
   push:
     branches:
-      - MaryJabro  # Adjust the branch if needed
+      - MaryJabro  # Temporary for testing: Adjust to main before pushing to main
   pull_request:
     branches:
-      - MaryJabro  # Adjust the branch if needed
+      - MaryJabro  #Temporary for testing:  Adjust to main before pushing to main
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-    # Step 1: Checkout the repository
+    # Checkout the repository
     - name: Checkout repository
       uses: actions/checkout@v4
 
-    # Step 2: Set up Node.js version 18
+    # Set up Node.js version 18
     - name: Set up Node.js
       uses: actions/setup-node@v3
       with:
         node-version: '18'
 
-    # Step 3: Install Node.js dependencies
+    # Install Node.js dependencies
     - name: Install Node.js dependencies
       run: npm install
       working-directory: VitalTrackApp
 
-    # Step 4: Run Unit Tests using Jest
+    # Run Unit Tests using Jest
     - name: Run Unit Tests
       run: npm run test
       working-directory: VitalTrackApp
 
-    # Step 5: Set up JDK 17 for Android
+    # Set up JDK 17 for Android
     - name: Set up JDK 17
       uses: actions/setup-java@v3
       with:
         java-version: '17'
         distribution: 'temurin'
 
-    # Step 6: Install Android SDK Command-line Tools
+    # Install Android SDK Command-line Tools
     - name: Install Android SDK
       run: |
         sudo apt-get update
@@ -54,7 +54,7 @@ jobs:
         sdkmanager --sdk_root=$ANDROID_HOME --licenses
         sdkmanager --sdk_root=$ANDROID_HOME "platform-tools" "platforms;android-34" "build-tools;34.0.0"
 
-    # Step 7: Build Android APK
+    # Build Android APK
     - name: Build Android APK
       run: ./gradlew assembleDebug
       working-directory: VitalTrackApp/android
