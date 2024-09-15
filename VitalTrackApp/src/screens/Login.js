@@ -7,7 +7,7 @@ import {
   Image,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native'; // Import useNavigation
-
+// test
 export default function LoginScreen() {
   const navigation = useNavigation(); // Access navigation
 

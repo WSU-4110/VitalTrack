@@ -76,3 +76,5 @@ yarn-error.log
 #FireBase
 google-services.json
 .env
+
+myenv/
