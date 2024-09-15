@@ -39,6 +39,7 @@ jobs:
         run: npm run test
         working-directory: VitalTrackApp
 
+
       # Set up JDK 17 for Android
       - name: Set up JDK 17
         uses: actions/setup-java@v3
