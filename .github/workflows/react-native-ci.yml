@@ -1,13 +1,10 @@
-name: React Native Frontend
+name: Android APK Build and Test
 
 on:
   push:
     branches: [ "MaryJabro" ]
   pull_request:
     branches: [ "MaryJabro" ]
-
-permissions:
-  contents: read
 
 jobs:
   build:
@@ -17,32 +14,35 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    # Set up Node.js for the React Native environment
+    # Set up JDK 11 for Android
+    - name: Set up JDK 11
+      uses: actions/setup-java@v3
+      with:
+        java-version: '11'
+
+    # Set up Node.js for React Native
     - name: Set up Node.js
       uses: actions/setup-node@v3
       with:
-        node-version: "16"
+        node-version: '16'
 
-    # Install dependencies 
-    - name: Install dependencies
-      working-directory: VitalTrackApp  
+    # Install Android SDK dependencies
+    - name: Install Android dependencies
+      run: sudo apt-get install -y openjdk-11-jdk-headless
+
+    # Install project dependencies
+    - name: Install Node.js dependencies
       run: |
         npm install
 
-    # Run ESLint in the correct directory
-    - name: Lint with ESLint
-      working-directory: VitalTrackApp  
-      run: |
-        npm run lint
-
-    # Run Jest 
-    - name: Test with Jest
-      working-directory: VitalTrackApp  
+    # Run Jest Unit Tests
+    - name: Run Unit Tests
       run: |
         npm run test
 
-    #  Build the project
-    - name: Build the project
-      working-directory: VitalTrackApp  
+    # Build the Android APK
+    - name: Build Android APK
+      working-directory: android
       run: |
-        npm run build
+        ./gradlew assembleDebug
+
