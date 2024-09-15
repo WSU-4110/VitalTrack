@@ -1,12 +1,13 @@
 name: React Native Frontend CI
 
+
 on:
   push:
     branches:
-      - MaryJabro  
+      - MaryJabro  # Adjust the branch if needed
   pull_request:
     branches:
-      - MaryJabro 
+      - MaryJabro  # Adjust the branch if needed
 
 jobs:
   build:
@@ -40,15 +41,20 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
 
-    # Step 6: Set up Android SDK
+    # Step 6: Install Android SDK Command-line Tools
     - name: Install Android SDK
-      run: sudo apt-get update && sudo apt-get install -y openjdk-17-jdk-headless android-sdk
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y wget unzip
+        wget https://dl.google.com/android/repository/commandlinetools-linux-8092744_latest.zip
+        mkdir -p $HOME/Android/cmdline-tools
+        unzip commandlinetools-linux-8092744_latest.zip -d $HOME/Android/cmdline-tools
+        export ANDROID_HOME=$HOME/Android
+        export PATH=$ANDROID_HOME/cmdline-tools/cmdline-tools/bin:$PATH
+        sdkmanager --sdk_root=$ANDROID_HOME --licenses
+        sdkmanager --sdk_root=$ANDROID_HOME "platform-tools" "platforms;android-34" "build-tools;34.0.0"
 
-    # Step 7: Accept Android SDK licenses
-    - name: Accept Android SDK Licenses
-      run: yes | sdkmanager --licenses
-
-    # Step 8: Build Android APK
+    # Step 7: Build Android APK
     - name: Build Android APK
       run: ./gradlew assembleDebug
       working-directory: VitalTrackApp/android
