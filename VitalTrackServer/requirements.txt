@@ -1,7 +1,10 @@
 astroid==3.2.4
 black==24.8.0
+certifi==2024.8.30
 click==8.1.7
 dill==0.3.8
+dnspython==2.6.1
+Flask==2.0.3
 iniconfig==2.0.0
 isort==5.13.2
 itsdangerous==2.2.0
@@ -14,7 +17,8 @@ pathspec==0.12.1
 platformdirs==4.3.3
 pluggy==1.5.0
 pylint==3.2.7
+pymongo==4.8.0
 pytest==8.3.3
+python-dotenv==1.0.1
 tomlkit==0.13.2
-Flask==2.3.3
-Werkzeug==2.3.7
+Werkzeug==2.0.3
