@@ -37,4 +37,7 @@ pip install -r requirements.txt
 
 ```bash
 cp example.env .env
+```
+
+2. Follow instructions in the env file
 
