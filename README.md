@@ -40,4 +40,5 @@ cp example.env .env
 ```
 
 2. Follow instructions in the env file
+3. Add your IP address to mongo dashboard
 
