@@ -1,1 +1,2 @@
 VitalTrackServer/.env
+VitalTrackServer/**/__pycache__
