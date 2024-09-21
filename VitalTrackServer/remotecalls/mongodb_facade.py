@@ -1,6 +1,7 @@
 import mongoengine
 import certifi
 import os
+from model.user_model import User
 
 
 class MongoDbFacade:
@@ -26,5 +27,8 @@ class MongoDbFacade:
     
     def save(self, document):
         document.save()
+
+    def get_user_by_id(self, id):
+        return User.objects(id=id).first()
 
 mongo_db_facade = MongoDbFacade()
