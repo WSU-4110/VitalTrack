@@ -57,7 +57,7 @@ npm install
 
 ### Set Up Android Emulator
 
-1. Install Android Studio if you haven't already: Download Android Studio
+1. Install Android Studio if you haven't already: [Download Android Studio](https://developer.android.com/studio) 
 2. Set up your Android development environment as per the requirements of Android Studio.
 3. Create and configure an emulator from Android Studio through the Virtual Device Configuration (using AVD Manager).
    
