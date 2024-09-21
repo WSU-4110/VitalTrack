@@ -1,19 +1,30 @@
-from pymongo.mongo_client import MongoClient
-from pymongo.server_api import ServerApi
+import mongoengine
 import certifi
 import os
 
 
 class MongoDbFacade:
-    def __init__(self):
-        self.uri = os.environ["MONGO_API_KEY"]
-        self.client = MongoClient(
-            self.uri, server_api=ServerApi("1"), tlsCAFile=certifi.where()
-        )
+    _self = None
 
+    def __new__(cls):
+        if cls._self is None:
+            cls._self = super().__new__(cls)
+        return cls._self
+    
+    def __init__(self):
+        if not hasattr(self, 'client'):
+            self.uri = os.environ["MONGO_API_KEY"]
+            self.client = mongoengine.connect(host=self.uri, tlsCAFile=certifi.where())
+            self.ping()
+    
     def ping(self):
         try:
             self.client.admin.command("ping")
             print("Pinged your deployment. You successfully connected to MongoDB!")
         except Exception as e:
             print(e)
+    
+    def save(self, document):
+        document.save()
+
+mongo_db_facade = MongoDbFacade()
