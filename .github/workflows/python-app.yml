@@ -32,7 +32,7 @@ jobs:
     - name: Set MongoDB URI environment variable
       env:
         MONGO_API_KEY: ${{ secrets.MONGO_API_KEY }}
-      run: echo "The API key is ${{ secrets.API_KEY }}
+      run: echo "MongoDB URI set"
     
     - name: Lint with flake8
       working-directory: VitalTrackServer
