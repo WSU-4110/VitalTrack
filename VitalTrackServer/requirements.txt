@@ -1,15 +1,19 @@
 astroid==3.2.4
 black==24.8.0
+blinker==1.8.2
 certifi==2024.8.30
 click==8.1.7
 dill==0.3.8
 dnspython==2.6.1
+Flask==2.3.3
 iniconfig==2.0.0
+inject==5.2.1
 isort==5.13.2
 itsdangerous==2.2.0
 Jinja2==3.1.4
 MarkupSafe==2.1.5
 mccabe==0.7.0
+mongoengine==0.29.1
 mypy-extensions==1.0.0
 packaging==24.1
 pathspec==0.12.1
@@ -20,5 +24,4 @@ pymongo==4.8.0
 pytest==8.3.3
 python-dotenv==1.0.1
 tomlkit==0.13.2
-Flask==2.3.3
 Werkzeug==2.3.7
