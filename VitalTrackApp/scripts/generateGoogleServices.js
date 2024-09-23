@@ -31,5 +31,5 @@ const config = {
   configuration_version: '1',
 };
 
-const filePath = 'VitalTrackApp/android/app/google-services.json';
+const filePath = './android/app/google-services.json';
 fs.writeFileSync(filePath, JSON.stringify(config, null, 2));
