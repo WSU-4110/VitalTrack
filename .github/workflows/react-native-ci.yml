@@ -17,6 +17,8 @@ jobs:
 
       - name: Set up google-services.json
         run: |
+          mkdir -p ./android/app
+          touch ./android/app/google-services.json
           echo '{
             "project_info": {
               "project_number": "313418201604",
