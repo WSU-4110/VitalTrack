@@ -1,59 +1,83 @@
 name: React Native Frontend CI
 
-
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
   pull_request:
-    branches: [ "main" ]
+    branches: ["main"]
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-    # Checkout the repository
-    - name: Checkout repository
-      uses: actions/checkout@v4
+      # Checkout the repository
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-    # Set up Node.js version 18
-    - name: Set up Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: '18'
+      - name: Set up google-services.json
+        run: |
+          echo '{
+            "project_info": {
+              "project_number": "313418201604",
+              "project_id": "${{ secrets.FIREBASE_PROJECT_ID }}",
+              "storage_bucket": "vitaltrack-7b035.appspot.com"
+            },
+            "client": [
+              {
+                "client_info": {
+                  "mobilesdk_app_id": "${{ secrets.FIREBASE_MOBILESDK_APP_ID }}",
+                  "android_client_info": {
+                    "package_name": "com.vitaltrackapp"
+                  }
+                },
+                "api_key": [
+                  {
+                    "current_key": "${{ secrets.FIREBASE_API_KEY }}"
+                  }
+                ]
+              }
+            ],
+            "configuration_version": "1"
+          }' > ./android/app/google-services.json
 
-    # Install Node.js dependencies
-    - name: Install Node.js dependencies
-      run: npm install
-      working-directory: VitalTrackApp
+      # Set up Node.js version 18
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "18"
 
-    # Run Unit Tests using Jest
-    - name: Run Unit Tests
-      run: npm run test
-      working-directory: VitalTrackApp
+      # Install Node.js dependencies
+      - name: Install Node.js dependencies
+        run: npm install
+        working-directory: VitalTrackApp
 
-    # Set up JDK 17 for Android
-    - name: Set up JDK 17
-      uses: actions/setup-java@v3
-      with:
-        java-version: '17'
-        distribution: 'temurin'
+      # Run Unit Tests using Jest
+      - name: Run Unit Tests
+        run: npm run test
+        working-directory: VitalTrackApp
 
-    # Install Android SDK Command-line Tools
-    - name: Install Android SDK
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y wget unzip
-        wget https://dl.google.com/android/repository/commandlinetools-linux-8092744_latest.zip
-        mkdir -p $HOME/Android/cmdline-tools
-        unzip commandlinetools-linux-8092744_latest.zip -d $HOME/Android/cmdline-tools
-        export ANDROID_HOME=$HOME/Android
-        export PATH=$ANDROID_HOME/cmdline-tools/cmdline-tools/bin:$PATH
-        sdkmanager --sdk_root=$ANDROID_HOME --licenses
-        sdkmanager --sdk_root=$ANDROID_HOME "platform-tools" "platforms;android-34" "build-tools;34.0.0"
+      # Set up JDK 17 for Android
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: "17"
+          distribution: "temurin"
 
-    # Build Android APK
-    - name: Build Android APK
-      run: ./gradlew assembleDebug
-      working-directory: VitalTrackApp/android
+      # Install Android SDK Command-line Tools
+      - name: Install Android SDK
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y wget unzip
+          wget https://dl.google.com/android/repository/commandlinetools-linux-8092744_latest.zip
+          mkdir -p $HOME/Android/cmdline-tools
+          unzip commandlinetools-linux-8092744_latest.zip -d $HOME/Android/cmdline-tools
+          export ANDROID_HOME=$HOME/Android
+          export PATH=$ANDROID_HOME/cmdline-tools/cmdline-tools/bin:$PATH
+          sdkmanager --sdk_root=$ANDROID_HOME --licenses
+          sdkmanager --sdk_root=$ANDROID_HOME "platform-tools" "platforms;android-34" "build-tools;34.0.0"
 
+      # Build Android APK
+      - name: Build Android APK
+        run: ./gradlew assembleDebug
+        working-directory: VitalTrackApp/android
