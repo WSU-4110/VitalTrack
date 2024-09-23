@@ -8,4 +8,3 @@ user_blueprint = Blueprint("user", __name__)
 def get_user_information(user_id):
     user = mongo_db_facade.get_user_by_id(user_id)
     return user.to_json() if user else "User not found"
-    
