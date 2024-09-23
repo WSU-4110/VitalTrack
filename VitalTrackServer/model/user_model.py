@@ -6,6 +6,7 @@ class Medication(me.EmbeddedDocument):
     dosage = me.StringField(required=True)
     time_logged = me.DateTimeField(required=True)
 
+
 class User(me.Document):
     name = me.StringField(required=True)
     email = me.EmailField(required=True)
@@ -13,8 +14,8 @@ class User(me.Document):
     medications = me.EmbeddedDocumentListField(Medication)
 
     meta = {
-        'collection': 'users',
-        'indexes': [
-            {'fields': ['email'], 'unique': True},
-        ]
+        "collection": "users",
+        "indexes": [
+            {"fields": ["email"], "unique": True},
+        ],
     }
