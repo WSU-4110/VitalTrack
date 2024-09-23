@@ -15,14 +15,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up google-services.json
-        env:
-          FIREBASE_PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID }}
-          FIREBASE_API_KEY: ${{ secrets.FIREBASE_API_KEY }}
-          FIREBASE_MOBILESDK_APP_ID: ${{ secrets.FIREBASE_MOBILESDK_APP_ID }}
-        run: node ./scripts/generateGoogleServices.js
-        working-directory: VitalTrackApp
-
       # Set up Node.js version 18
       - name: Set up Node.js
         uses: actions/setup-node@v3
@@ -32,6 +24,14 @@ jobs:
       # Install Node.js dependencies
       - name: Install Node.js dependencies
         run: npm install
+        working-directory: VitalTrackApp
+
+      - name: Set up google-services.json
+        env:
+          FIREBASE_PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID }}
+          FIREBASE_API_KEY: ${{ secrets.FIREBASE_API_KEY }}
+          FIREBASE_MOBILESDK_APP_ID: ${{ secrets.FIREBASE_MOBILESDK_APP_ID }}
+        run: node ./scripts/generateGoogleServices.js
         working-directory: VitalTrackApp
 
       # Run Unit Tests using Jest
