@@ -1,12 +1,3 @@
-import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  StyleSheet,
-  Image,
-  Alert,
-} from 'react-native';
 
 import auth from '@react-native-firebase/auth';
 import {useState} from 'react';
@@ -22,9 +13,6 @@ import {
   View,
 } from 'react-native';
 
-import auth from '@react-native-firebase/auth';
-import {useNavigation} from '@react-navigation/native';
-import {useState} from 'react';
 
 export default function SignupScreen() {
   const [email, setEmail] = useState('');
