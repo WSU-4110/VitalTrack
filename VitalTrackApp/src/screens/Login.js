@@ -48,7 +48,7 @@ export default function LoginScreen() {
       <Text style={styles.title}>Welcome</Text>
 
       <TextInput
-        placeholder="Username"
+        placeholder="Email"
         style={styles.input}
         placeholderTextColor="#888"
         onChangeText={email => setEmail(email)}
