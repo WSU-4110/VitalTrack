@@ -4,12 +4,19 @@ import {
   TextInput,
   TouchableOpacity,
   StyleSheet,
+  Image,
 } from 'react-native';
+import { useNavigation } from '@react-navigation/native'; // Import useNavigation
+
 export default function LoginScreen() {
+  const navigation  = useNavigation(); // to navigate between screens 
+
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Welcome Back</Text>
-      <Text style={styles.subtitle}>Login to Your Account</Text>
+
+  <View style={styles.container}> 
+      <Image source={require('../../assets/images/VitalTrack-Logo.png')} style={styles.logo} />
+
+      <Text style={styles.title}>Welcome</Text>
 
       <TextInput
         placeholder="Username"
@@ -22,13 +29,20 @@ export default function LoginScreen() {
         style={styles.input}
         placeholderTextColor="#888"
       />
+      <Text style={styles.forgotPassword}>Forgot Password?</Text>
 
       <TouchableOpacity style={styles.button}>
-        <Text style={styles.buttonText}>Log In</Text>
+        <Text style={styles.buttonText}>Sign In</Text>
       </TouchableOpacity>
+      <View style={styles.newToApp}>
+        <Text style={styles.smallText}>New to VitalTrack? </Text>
+          <Text style={styles.joinNow}>Join Now</Text>
+      </View>
 
-      <Text style={styles.forgotPassword}>Forgot Password?</Text>
     </View>
+
+
+  
   );
 }
 
@@ -61,7 +75,7 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     marginBottom: 15,
     shadowColor: '#000',
-    shadowOffset: {width: 0, height: 1},
+    shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.1,
     shadowRadius: 2,
     elevation: 2,
@@ -83,6 +97,25 @@ const styles = StyleSheet.create({
   forgotPassword: {
     color: '#1E90FF',
     fontSize: 16,
-    marginTop: 15,
+    marginTop: 5,
+    marginBottom: 5
   },
+  logo: {
+    height: 200,
+    aspectRatio: 1.5,
+    marginBottom: 0
+  },
+  smallText: {
+    fontSize: 16,
+    color: '#ffffff'
+  },
+  newToApp:{
+    marginTop:10,
+    flexDirection: 'row'
+  },
+  joinNow: {
+    fontSize: 16,
+    color: '#1E90FF',
+  }
+
 });

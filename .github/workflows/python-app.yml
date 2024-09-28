@@ -2,47 +2,50 @@ name: Python application
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
   pull_request:
-    branches: [ "main" ]
+    branches: ["main"]
 
 permissions:
   contents: read
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
-    
-    - name: Set up Python 3.9
-      uses: actions/setup-python@v3
-      with:
-        python-version: "3.9"
-        
-    - name: Install dependencies
-      working-directory: VitalTrackServer
-      run: |
-        python -m pip install --upgrade pip
-        pip install flake8==4.0.1 pytest==7.0.1  # Pinning specific versions
-        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-    
-    - name: Set MongoDB URI environment variable
-      env:
-        MONGO_API_KEY: ${{ secrets.MONGO_API_KEY }}
-      run: echo "MongoDB URI set"
-    
-    - name: Lint with flake8
-      working-directory: VitalTrackServer
-      run: |
-        # stop the build if there are Python syntax errors or undefined names
-        flake8 . --exclude .venv --count --select=E9,F63,F7,F82 --show-source --statistics
-        # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
-        flake8 . --exclude .venv --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
-    
-    - name: Test with pytest
-      working-directory: VitalTrackServer
-      run: |
-        pytest
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 3.9
+        uses: actions/setup-python@v3
+        with:
+          python-version: "3.9"
+
+      - name: Install dependencies
+        working-directory: VitalTrackServer
+        run: |
+          python -m pip install --upgrade pip
+          pip install flake8==4.0.1 pytest==7.0.1  # Pinning specific versions
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+
+      - name: Set environment variables
+        env:
+          MONGO_API_KEY: ${{ secrets.MONGO_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          FINED_TUNED_MODEL: ${{ secrets.FINED_TUNED_MODEL }}
+          OPENAI_SYSTEM_MESSAGE: ${{ secrets.OPENAI_SYSTEM_MESSAGE }}
+
+        run: echo "variables set!"
+
+      - name: Lint with flake8
+        working-directory: VitalTrackServer
+        run: |
+          # stop the build if there are Python syntax errors or undefined names
+          flake8 . --exclude .venv --count --select=E9,F63,F7,F82 --show-source --statistics
+          # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
+          flake8 . --exclude .venv --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+
+      - name: Test with pytest
+        working-directory: VitalTrackServer
+        run: |
+          python3 -m pytest

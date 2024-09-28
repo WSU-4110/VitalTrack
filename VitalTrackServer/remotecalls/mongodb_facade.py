@@ -2,33 +2,28 @@ import mongoengine
 import certifi
 import os
 from model.user_model import User
+import logging
 
 
 class MongoDbFacade:
-    _self = None
+    def __init__(self) -> None:
+        self.uri = os.environ["MONGO_API_KEY"]
+        self.client = mongoengine.connect(host=self.uri, tlsCAFile=certifi.where())
+        self.logger = logging.getLogger(__name__)
+        self.ping()
 
-    def __new__(cls):
-        if cls._self is None:
-            cls._self = super().__new__(cls)
-        return cls._self
-    
-    def __init__(self):
-        if not hasattr(self, 'client'):
-            self.uri = os.environ["MONGO_API_KEY"]
-            self.client = mongoengine.connect(host=self.uri, tlsCAFile=certifi.where())
-            self.ping()
-    
-    def ping(self):
+    def ping(self) -> None:
         try:
             self.client.admin.command("ping")
             print("Pinged your deployment. You successfully connected to MongoDB!")
         except Exception as e:
-            print(e)
-    
-    def save(self, document):
+            self.logger.info("Failed to make connection to mongodb: ", e)
+
+    def save(self, document) -> None:
         document.save()
 
-    def get_user_by_id(self, id):
+    def get_user_by_id(self, id: str) -> str:
         return User.objects(id=id).first()
+
 
 mongo_db_facade = MongoDbFacade()
