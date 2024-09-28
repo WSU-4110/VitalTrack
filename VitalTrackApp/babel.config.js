@@ -1,8 +1,6 @@
 module.exports = {
-  presets: [
-    ['module:@react-native/babel-preset'],
-    '@babel/preset-env',
-    '@babel/preset-react',
-    '@babel/preset-typescript',
+  presets: ['module:@react-native/babel-preset'],
+  plugins: [
+    ['@babel/plugin-transform-private-property-in-object', { loose: true }],
   ],
 };
