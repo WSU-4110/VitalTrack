@@ -1,79 +1,48 @@
-import auth from '@react-native-firebase/auth';
-import {useNavigation} from '@react-navigation/native';
-import React, {useState} from 'react';
 import {
-  Image,
-  StyleSheet,
+  View,
   Text,
   TextInput,
   TouchableOpacity,
-  View,
+  StyleSheet,
+  Image,
 } from 'react-native';
+import { useNavigation } from '@react-navigation/native'; // Import useNavigation
 
 export default function LoginScreen() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const navigation = useNavigation();
-
-  function handleSubmit() {
-    loginUser(email, password);
-  }
-
-  async function loginUser(email, password) {
-    try {
-      const userCredential = await auth().signInWithEmailAndPassword(
-        email,
-        password,
-      );
-      const user = userCredential.user;
-      console.log('User signed in!', user);
-
-      if (navigation) {
-        navigation.navigate('Home');
-      } else {
-        console.log('Navigation object is undefined');
-      }
-    } catch (error) {
-      console.error('Error during sign in:', error.message);
-    }
-  }
+  const navigation  = useNavigation(); // to navigate between screens 
 
   return (
-    <View style={styles.container}>
-      <Image
-        source={require('../../assets/images/VitalTrack-Logo.png')}
-        style={styles.logo}
-      />
+
+  <View style={styles.container}> 
+      <Image source={require('../../assets/images/VitalTrack-Logo.png')} style={styles.logo} />
 
       <Text style={styles.title}>Welcome</Text>
 
       <TextInput
-        placeholder="Email"
+        placeholder="Username"
         style={styles.input}
         placeholderTextColor="#888"
-        onChangeText={email => setEmail(email)}
       />
       <TextInput
         placeholder="Password"
         secureTextEntry
         style={styles.input}
         placeholderTextColor="#888"
-        onChangeText={password => setPassword(password)}
       />
       <Text style={styles.forgotPassword}>Forgot Password?</Text>
 
-      <TouchableOpacity style={styles.button} onPress={handleSubmit}>
+      <TouchableOpacity style={styles.button}>
         <Text style={styles.buttonText}>Sign In</Text>
       </TouchableOpacity>
       <View style={styles.newToApp}>
         <Text style={styles.smallText}>New to VitalTrack? </Text>
-        <Text
-          style={styles.joinNow}
-          onPress={() => navigation.navigate('Signup')}>
-          Join Now
-        </Text>
+          <Text style={styles.joinNow}>Join Now</Text>
       </View>
+
     </View>
+
+
+  
   );
 }
 
@@ -106,7 +75,7 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     marginBottom: 15,
     shadowColor: '#000',
-    shadowOffset: {width: 0, height: 1},
+    shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.1,
     shadowRadius: 2,
     elevation: 2,
@@ -129,23 +98,24 @@ const styles = StyleSheet.create({
     color: '#1E90FF',
     fontSize: 16,
     marginTop: 5,
-    marginBottom: 5,
+    marginBottom: 5
   },
   logo: {
     height: 200,
     aspectRatio: 1.5,
-    marginBottom: 0,
+    marginBottom: 0
   },
   smallText: {
     fontSize: 16,
-    color: '#ffffff',
+    color: '#ffffff'
   },
-  newToApp: {
-    marginTop: 10,
-    flexDirection: 'row',
+  newToApp:{
+    marginTop:10,
+    flexDirection: 'row'
   },
   joinNow: {
     fontSize: 16,
     color: '#1E90FF',
-  },
+  }
+
 });
