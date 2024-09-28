@@ -36,7 +36,7 @@ jobs:
 
       # Run Unit Tests using Jest
       - name: Run Unit Tests
-        run: npm run test --passWithNoTests
+        run: npm run test
         working-directory: VitalTrackApp
 
       # Set up JDK 17 for Android

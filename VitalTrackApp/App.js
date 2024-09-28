@@ -1,9 +1,10 @@
-import './gesture-handler';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
-import SignupScreen from './src/screens/Signup';
-import LoginScreen from './src/screens/Login';
+import React from 'react';
+import './gesture-handler';
 import HomeScreen from './src/screens/Home';
+import LoginScreen from './src/screens/Login';
+import SignupScreen from './src/screens/Signup';
 
 export default function App() {
   const Stack = createStackNavigator();
