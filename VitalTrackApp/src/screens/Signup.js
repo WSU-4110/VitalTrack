@@ -9,9 +9,9 @@ import {
   View,
 } from 'react-native';
 
-import auth from '@react-native-firebase/auth';
-import {useNavigation} from '@react-navigation/native';
+import {useNavigation, CommonActions} from '@react-navigation/native';
 import {useState} from 'react';
+import auth from '@react-native-firebase/auth';
 
 export default function SignupScreen() {
   const [email, setEmail] = useState('');
@@ -24,28 +24,37 @@ export default function SignupScreen() {
   }
 
   async function createUser(email, password) {
-    try {
-      const userCredential = await auth().createUserWithEmailAndPassword(
-        email,
-        password,
-      );
-      const uid = userCredential.user.uid;
+    if (email && password) {
+      try {
+        const userCredential = await auth().createUserWithEmailAndPassword(
+          email,
+          password,
+        );
+        const uid = userCredential.user.uid;
 
-      const response = await fetch(`${baseUrl}/createUser`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({uid, email}),
-      });
+        const response = await fetch(`${baseUrl}/createUser`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({uid, email}),
+        });
 
-      const data = await response.json();
-      console.log('User created in database:', data);
-
-      Alert.alert('User created successfully');
-      navigation.navigate('Home');
-    } catch (error) {
-      Alert.alert(error.code);
+        const data = await response.json();
+        console.log('User created in database:', data);
+        Alert.alert('User created successfully');
+        navigation.dispatch(
+          CommonActions.reset({
+            index: 0,
+            routes: [{name: 'Home'}],
+          }),
+        );
+      } catch (error) {
+        console.log(error);
+        Alert.alert(error.code);
+      }
+    } else {
+      Alert.alert('Please enter email and password');
     }
   }
 
