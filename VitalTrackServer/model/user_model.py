@@ -9,7 +9,7 @@ class Medication(me.EmbeddedDocument):
 
 
 class User(me.Document):
-    uid = me.StringField(required=True)
+    user_id = me.StringField(required=True)
     name = me.StringField(required=True)
     email = me.EmailField(required=True)
     age = me.IntField(required=True)
