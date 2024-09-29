@@ -9,9 +9,9 @@ import {
   View,
 } from 'react-native';
 
-import {useNavigation, CommonActions} from '@react-navigation/native';
-import {useState} from 'react';
 import auth from '@react-native-firebase/auth';
+import {CommonActions, useNavigation} from '@react-navigation/native';
+import {useState} from 'react';
 
 export default function SignupScreen() {
   const [email, setEmail] = useState('');
