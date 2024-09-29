@@ -7,7 +7,7 @@ create_user_blueprint = Blueprint("createUser", __name__)
 @create_user_blueprint.route("/createUser", methods=["POST"])
 def create_user():
     data = request.get_json()
-
+    uid = data.get("uid")
     email = data.get("email")
     name = data.get("name", "")
     age = data.get("age", 20)
