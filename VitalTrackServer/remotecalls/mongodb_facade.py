@@ -23,7 +23,11 @@ class MongoDbFacade:
         document.save()
 
     def get_user_by_id(self, id: str) -> str:
+<<<<<<< HEAD
         return User.objects(user_id=id).first()
+=======
+        return User.objects(uid=id).first()
+>>>>>>> a203388 (query user by firebase uid)
 
 
 mongo_db_facade = MongoDbFacade()
