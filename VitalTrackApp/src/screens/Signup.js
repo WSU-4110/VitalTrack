@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {
   Alert,
   Image,
@@ -11,13 +11,13 @@ import {
 
 import auth from '@react-native-firebase/auth';
 import {CommonActions, useNavigation} from '@react-navigation/native';
-import {useState} from 'react';
+
+const baseUrl = 'http://10.0.2.2:5000';
 
 export default function SignupScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const navigation = useNavigation();
-  const baseUrl = 'http://10.0.2.2:5000';
 
   function handleSubmit() {
     createUser(email, password);
