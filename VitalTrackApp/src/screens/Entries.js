@@ -6,17 +6,79 @@ import {
     TouchableOpacity,
     Modal,
     ScrollView,
+    FlatList,
     Image,
 } from 'react-native';
 
 export default function EntriesScreen() {
     const [modalVisible, setModalVisible] = useState(false);
-    const [moodEntries, setMoodEntries] = useState([]);
+    const [wellbeingEntries, setWellbeingEntries] = useState([]);
     const [symptomsEntries, setSymptomsEntries] = useState([]);
     const [sleepEntries, setSleepEntries] = useState([]);
     const [activityEntries, setActivityEntries] = useState([]);
+    const [moodEntries, setMoodEntries] = useState([]);
+    const [stressEntries, setStressEntries] = useState([]);
+    const [energyEntries, setEnergyEntries] = useState([]);
 
+    const [loggedEntries, setLoggedEntries] = useState([]); // Store all logged entries
     const [currentStep, setCurrentStep] = useState('wellbeing');
+    const [selectedWellBeing, setSelectedWellBeing] = useState('');
+    const [selectedMood, setSelectedMood] = useState('');
+    const [selectedStress, setSelectedStress] = useState('');
+    const [selectedEnergy, setSelectedEnergy] = useState('');
+
+  
+const wellBeingIcons = {
+    'Very Poor': require('../../assets/icons/well-being/well-being-verypoor.png'),
+    'Poor': require('../../assets/icons/well-being/well-being-poor.png'),
+    'Okay': require('../../assets/icons/well-being/well-being-okay.png'),
+    'Good': require('../../assets/icons/well-being/well-being-good.png'),
+    'Great': require('../../assets/icons/well-being/well-being-great.png'),
+};
+
+const symptomsIcons = {
+    'Sneeze': require('../../assets/icons/symptoms/symptoms-sneeze.png'),
+    'Nausea': require('../../assets/icons/symptoms/symptoms-nausea.png'),
+    'Headache': require('../../assets/icons/symptoms/symptoms-headache.png'),
+    'Fever': require('../../assets/icons/symptoms/symptoms-fever.png'),
+    'Fatigue': require('../../assets/icons/symptoms/symptoms-fatigue.png'),
+};
+
+const sleepIcons = {
+    'Bad': require('../../assets/icons/sleep/sleep-bad.png'),
+    'Moderate': require('../../assets/icons/sleep/sleep-moderate.png'),
+    'Good': require('../../assets/icons/sleep/sleep-good.png'),
+};
+
+const activityIcons = {
+    'Yoga': require('../../assets/icons/activity/activity-yoga.png'),
+    'Weights': require('../../assets/icons/activity/activity-weights.png'),
+    'Walk': require('../../assets/icons/activity/activity-walk.png'),
+    'Sport': require('../../assets/icons/activity/activity-sport.png'),
+    'HIT': require('../../assets/icons/activity/activity-HIT.png'),
+};
+
+const moodIcons = {
+    'Vey Bad': require('../../assets/icons/mood/mood-verybad.png'),
+    'Bad': require('../../assets/icons/mood/mood-bad.png'),
+    'Okay': require('../../assets/icons/mood/mood-okay.png'),
+    'Good': require('../../assets/icons/mood/mood-good.png'),
+    'Great': require('../../assets/icons/mood/mood-great.png'),
+};
+
+const energyIcons = {
+    'Very Low': require('../../assets/icons/energy/energy-verylow.png'),
+
+    'Low': require('../../assets/icons/energy/energy-low.png'),
+    'Moderate': require('../../assets/icons/energy/energy-moderate.webp'),
+    'High': require('../../assets/icons/energy/energy-high.webp'),
+};
+
+const stressIcons = {
+    'Low': require('../../assets/icons/stress/stress-low.png'),
+    'Moderate': require('../../assets/icons/stress/stress-medium.jpg'),
+    'High': require('../../assets/icons/stress/stress-high.png'),
+};
 
     const toggleButton = (group, selection, setGroup) => {
         if (group.includes(selection)) {
@@ -27,8 +89,38 @@ export default function EntriesScreen() {
     };
 
     const handleWellBeingSelection = (selection) => {
-        toggleButton(moodEntries, selection, setMoodEntries);
+        toggleButton(wellbeingEntries, selection, setWellbeingEntries);
+        setSelectedWellBeing(selection);
         setCurrentStep('details');
+    };
+
+    const handleNextToMood = () => {
+        setCurrentStep('mood'); // Move to the mood, energy, and stress step
+    };
+
+    const logEntry = () => {
+        const newEntry = {
+            id: Math.random().toString(),
+            wellBeing: selectedWellBeing,
+            symptoms: symptomsEntries,
+            sleep: sleepEntries,
+            activity: activityEntries,
+            mood: selectedMood,
+            stress: selectedStress,
+            energy: selectedEnergy,
+            date: new Date().toLocaleDateString(),
+        };
+
+        // When an entry is logged, reset all selections
+        setLoggedEntries([...loggedEntries, newEntry]);
+        setModalVisible(false);
+        setWellbeingEntries([]);
+        setSymptomsEntries([]);
+        setSleepEntries([]);
+        setActivityEntries([]);
+        setSelectedMood('');
+        setSelectedStress('');
+        setSelectedEnergy('');
     };
 
     return (
@@ -36,6 +128,36 @@ export default function EntriesScreen() {
             <View style={styles.header}>
                 <Text style={styles.title}>Entries</Text>
             </View>
+
+            {/* Display Logged Entries */}
+            {(() => {
+                if (loggedEntries.length === 0) {
+                    return <Text style={styles.noEntriesText}>No entries logged yet</Text>;
+                } else {
+                    return (
+                        <FlatList
+                            data={loggedEntries}
+                            keyExtractor={(item) => item.id}
+                            renderItem={({ item }) => (
+                                <View style={styles.entryCard}>
+                                    <View style={styles.entryContent}>
+                                        <View>
+                                            <Text style={styles.date}>{item.date}</Text>
+                                            <Text style={styles.summary}>Symptoms: {item.symptoms.join(', ')}</Text>
+                                            <Text style={styles.summary}>Sleep: {item.sleep.join(', ')}</Text>
+                                            <Text style={styles.summary}>Activity: {item.activity.join(', ')}</Text>
+                                            <Text style={styles.summary}>Mood: {item.mood}</Text>
+                                            <Text style={styles.summary}>Stress: {item.stress}</Text>
+                                            <Text style={styles.summary}>Energy: {item.energy}</Text>
+                                        </View>
+                                        <Image source={wellBeingIcons[item.wellBeing]} style={styles.wellBeingIcon} />
+                                    </View>
+                                </View>
+                            )}
+                        />
+                    );
+                }
+            })()}
 
             <TouchableOpacity
                 style={styles.button}
@@ -55,7 +177,6 @@ export default function EntriesScreen() {
                 onRequestClose={() => setModalVisible(false)}
             >
                 <View style={styles.modalContainer}>
-                    {/* X Button at Top-Right */}
                     <TouchableOpacity
                         style={styles.closeButton}
                         onPress={() => setModalVisible(false)}
@@ -64,118 +185,48 @@ export default function EntriesScreen() {
                     </TouchableOpacity>
 
                     <View style={styles.modalContent}>
-                        {currentStep === 'details' && (
-                            <TouchableOpacity
-                                style={styles.backButton}
-                                onPress={() => setCurrentStep('wellbeing')}
-                            >
-                                <Text style={styles.backButtonText}>← Back</Text>
-                            </TouchableOpacity>
-                        )}
-
-                        {/* Well-being Selection */}
-                        {currentStep === 'wellbeing' ? (
+                        {/* Step 1: Well-being Selection */}
+                        {currentStep === 'wellbeing' && (
                             <>
                                 <Text style={styles.modalTitle}>How is your well-being today?</Text>
                                 <View style={styles.iconRow}>
-                                    <TouchableOpacity
-                                        style={[
-                                            styles.moodOption,
-                                            moodEntries.includes('Very Poor') && styles.selectedOption,
-                                        ]}
-                                        onPress={() => handleWellBeingSelection('Very Poor')}
-                                    >
-                                        <Image source={require('../../assets/icons/well-being/well-being-verypoor.png')}
+                                    {Object.keys(wellBeingIcons).map((wellBeing) => (
+                                        <TouchableOpacity
+                                            key={wellBeing}
                                             style={[
-                                                styles.icon,
-                                                moodEntries.includes('Very Poor') && { tintColor: 'black' }
+                                                styles.moodOption,
+                                                selectedWellBeing === wellBeing && styles.selectedOption,
                                             ]}
-                                        />
-                                        <Text style={[
-                                            styles.iconLabel,
-                                            moodEntries.includes('Very Poor') && { color: 'black' }
-                                        ]}>Very Poor</Text>
-                                    </TouchableOpacity>
-
-                                    <TouchableOpacity
-                                        style={[
-                                            styles.moodOption,
-                                            moodEntries.includes('Poor') && styles.selectedOption,
-                                        ]}
-                                        onPress={() => handleWellBeingSelection('Poor')}
-                                    >
-                                        <Image source={require('../../assets/icons/well-being/well-being-poor.png')}
-                                            style={[
-                                                styles.icon,
-                                                moodEntries.includes('Poor') && { tintColor: 'black' }
-                                            ]}
-                                        />
-                                        <Text style={[
-                                            styles.iconLabel,
-                                            moodEntries.includes('Poor') && { color: 'black' }
-                                        ]}>Poor</Text>
-                                    </TouchableOpacity>
-
-                                    <TouchableOpacity
-                                        style={[
-                                            styles.moodOption,
-                                            moodEntries.includes('Okay') && styles.selectedOption,
-                                        ]}
-                                        onPress={() => handleWellBeingSelection('Okay')}
-                                    >
-                                        <Image source={require('../../assets/icons/well-being/well-being-okay.png')}
-                                            style={[
-                                                styles.icon,
-                                                moodEntries.includes('Okay') && { tintColor: 'black' }
-                                            ]}
-                                        />
-                                        <Text style={[
-                                            styles.iconLabel,
-                                            moodEntries.includes('Okay') && { color: 'black' }
-                                        ]}>Okay</Text>
-                                    </TouchableOpacity>
-
-                                    <TouchableOpacity
-                                        style={[
-                                            styles.moodOption,
-                                            moodEntries.includes('Good') && styles.selectedOption,
-                                        ]}
-                                        onPress={() => handleWellBeingSelection('Good')}
-                                    >
-                                        <Image source={require('../../assets/icons/well-being/well-being-good.png')}
-                                            style={[
-                                                styles.icon,
-                                                moodEntries.includes('Good') && { tintColor: 'black' }
-                                            ]}
-                                        />
-                                        <Text style={[
-                                            styles.iconLabel,
-                                            moodEntries.includes('Good') && { color: 'black' }
-                                        ]}>Good</Text>
-                                    </TouchableOpacity>
-
-                                    <TouchableOpacity
-                                        style={[
-                                            styles.moodOption,
-                                            moodEntries.includes('Great') && styles.selectedOption,
-                                        ]}
-                                        onPress={() => handleWellBeingSelection('Great')}
-                                    >
-                                        <Image source={require('../../assets/icons/well-being/well-being-great.png')}
-                                            style={[
-                                                styles.icon,
-                                                moodEntries.includes('Great') && { tintColor: 'black' }
-                                            ]}
-                                        />
-                                        <Text style={[
-                                            styles.iconLabel,
-                                            moodEntries.includes('Great') && { color: 'black' }
-                                        ]}>Great</Text>
-                                    </TouchableOpacity>
+                                            onPress={() => handleWellBeingSelection(wellBeing)}
+                                        >
+                                            <Image
+                                                source={wellBeingIcons[wellBeing]}
+                                                style={[
+                                                    styles.icon,
+                                                    selectedWellBeing === wellBeing && { tintColor: 'black' }
+                                                ]}
+                                            />
+                                            <Text style={[
+                                                styles.iconLabel,
+                                                selectedWellBeing === wellBeing && { color: 'black' }
+                                            ]}>
+                                                {wellBeing}
+                                            </Text>
+                                        </TouchableOpacity>
+                                    ))}
                                 </View>
                             </>
-                        ) : (
+                        )}
+
+                        {/* Step 2: Symptoms, Sleep, and Activity */}
+                        {currentStep === 'details' && (
                             <>
+                                <TouchableOpacity
+                                    style={styles.backButton}
+                                    onPress={() => setCurrentStep('wellbeing')}
+                                >
+                                    <Text style={styles.backButtonText}>← Back</Text>
+                                </TouchableOpacity>
                                 <Text style={styles.modalTitle}>Select Symptoms, Sleep, and Activity</Text>
                                 <ScrollView style={styles.scrollView}>
                                     {/* Symptoms Section */}
@@ -183,96 +234,27 @@ export default function EntriesScreen() {
                                         <View style={styles.groupBorder}>
                                             <Text style={styles.sectionTitle}>Symptoms</Text>
                                             <View style={styles.iconRow}>
-                                                <TouchableOpacity
-                                                    style={[
-                                                        styles.moodOption,
-                                                        symptomsEntries.includes('Sneeze') && styles.selectedOption,
-                                                    ]}
-                                                    onPress={() => toggleButton(symptomsEntries, 'Sneeze', setSymptomsEntries)}
-                                                >
-                                                    <Image source={require('../../assets/icons/symptoms/symptoms-sneeze.png')}
+                                                {Object.keys(symptomsIcons).map((symptom) => (
+                                                    <TouchableOpacity
+                                                        key={symptom}
                                                         style={[
-                                                            styles.icon,
-                                                            symptomsEntries.includes('Sneeze') && { tintColor: 'black' }
+                                                            styles.moodOption,
+                                                            symptomsEntries.includes(symptom) && styles.selectedOption,
                                                         ]}
-                                                    />
-                                                    <Text style={[
-                                                        styles.iconLabel,
-                                                        symptomsEntries.includes('Sneeze') && { color: 'black' }
-                                                    ]}>Sneeze</Text>
-                                                </TouchableOpacity>
-                                                <TouchableOpacity
-                                                    style={[
-                                                        styles.moodOption,
-                                                        symptomsEntries.includes('Nausea') && styles.selectedOption,
-                                                    ]}
-                                                    onPress={() => toggleButton(symptomsEntries, 'Nausea', setSymptomsEntries)}
-                                                >
-                                                    <Image source={require('../../assets/icons/symptoms/symptoms-nausea.png')}
-                                                        style={[
-                                                            styles.icon,
-                                                            symptomsEntries.includes('Nausea') && { tintColor: 'black' }
-                                                        ]}
-                                                    />
-                                                    <Text style={[
-                                                        styles.iconLabel,
-                                                        symptomsEntries.includes('Nausea') && { color: 'black' }
-                                                    ]}>Nausea</Text>
-                                                </TouchableOpacity>
-                                                <TouchableOpacity
-                                                    style={[
-                                                        styles.moodOption,
-                                                        symptomsEntries.includes('Headache') && styles.selectedOption,
-                                                    ]}
-                                                    onPress={() => toggleButton(symptomsEntries, 'Headache', setSymptomsEntries)}
-                                                >
-                                                    <Image source={require('../../assets/icons/symptoms/symptoms-headache.png')}
-                                                        style={[
-                                                            styles.icon,
-                                                            symptomsEntries.includes('Headache') && { tintColor: 'black' }
-                                                        ]}
-                                                    />
-                                                    <Text style={[
-                                                        styles.iconLabel,
-                                                        symptomsEntries.includes('Headache') && { color: 'black' }
-                                                    ]}>Headache</Text>
-                                                </TouchableOpacity>
-                                                <TouchableOpacity
-                                                    style={[
-                                                        styles.moodOption,
-                                                        symptomsEntries.includes('Fever') && styles.selectedOption,
-                                                    ]}
-                                                    onPress={() => toggleButton(symptomsEntries, 'Fever', setSymptomsEntries)}
-                                                >
-                                                    <Image source={require('../../assets/icons/symptoms/symptoms-fever.png')}
-                                                        style={[
-                                                            styles.icon,
-                                                            symptomsEntries.includes('Fever') && { tintColor: 'black' }
-                                                        ]}
-                                                    />
-                                                    <Text style={[
-                                                        styles.iconLabel,
-                                                        symptomsEntries.includes('Fever') && { color: 'black' }
-                                                    ]}>Fever</Text>
-                                                </TouchableOpacity>
-                                                <TouchableOpacity
-                                                    style={[
-                                                        styles.moodOption,
-                                                        symptomsEntries.includes('Fatigue') && styles.selectedOption,
-                                                    ]}
-                                                    onPress={() => toggleButton(symptomsEntries, 'Fatigue', setSymptomsEntries)}
-                                                >
-                                                    <Image source={require('../../assets/icons/symptoms/symptoms-fatigue.png')}
-                                                        style={[
-                                                            styles.icon,
-                                                            symptomsEntries.includes('Fatigue') && { tintColor: 'black' }
-                                                        ]}
-                                                    />
-                                                    <Text style={[
-                                                        styles.iconLabel,
-                                                        symptomsEntries.includes('Fatigue') && { color: 'black' }
-                                                    ]}>Fatigue</Text>
-                                                </TouchableOpacity>
+                                                        onPress={() => toggleButton(symptomsEntries, symptom, setSymptomsEntries)}
+                                                    >
+                                                        <Image source={symptomsIcons[symptom]}
+                                                            style={[
+                                                                styles.icon,
+                                                                symptomsEntries.includes(symptom) && { tintColor: 'black' }
+                                                            ]}
+                                                        />
+                                                        <Text style={[
+                                                            styles.iconLabel,
+                                                            symptomsEntries.includes(symptom) && { color: 'black' }
+                                                        ]}>{symptom}</Text>
+                                                    </TouchableOpacity>
+                                                ))}
                                             </View>
                                         </View>
                                     </View>
@@ -282,60 +264,27 @@ export default function EntriesScreen() {
                                         <View style={styles.groupBorder}>
                                             <Text style={styles.sectionTitle}>Sleep</Text>
                                             <View style={styles.iconRow}>
-                                                <TouchableOpacity
-                                                    style={[
-                                                        styles.moodOption,
-                                                        sleepEntries.includes('Bad') && styles.selectedOption,
-                                                    ]}
-                                                    onPress={() => toggleButton(sleepEntries, 'Bad', setSleepEntries)}
-                                                >
-                                                    <Image source={require('../../assets/icons/sleep/sleep-bad.png')}
+                                                {Object.keys(sleepIcons).map((sleep) => (
+                                                    <TouchableOpacity
+                                                        key={sleep}
                                                         style={[
-                                                            styles.icon,
-                                                            sleepEntries.includes('Bad') && { tintColor: 'black' }
+                                                            styles.moodOption,
+                                                            sleepEntries.includes(sleep) && styles.selectedOption,
                                                         ]}
-                                                    />
-                                                    <Text style={[
-                                                        styles.iconLabel,
-                                                        sleepEntries.includes('Bad') && { color: 'black' }
-                                                    ]}>Bad</Text>
-                                                </TouchableOpacity>
-                                                <TouchableOpacity
-                                                    style={[
-                                                        styles.moodOption,
-                                                        sleepEntries.includes('Moderate') && styles.selectedOption,
-                                                    ]}
-                                                    onPress={() => toggleButton(sleepEntries, 'Moderate', setSleepEntries)}
-                                                >
-                                                    <Image source={require('../../assets/icons/sleep/sleep-moderate.png')}
-                                                        style={[
-                                                            styles.icon,
-                                                            sleepEntries.includes('Moderate') && { tintColor: 'black' }
-                                                        ]}
-                                                    />
-                                                    <Text style={[
-                                                        styles.iconLabel,
-                                                        sleepEntries.includes('Moderate') && { color: 'black' }
-                                                    ]}>Moderate</Text>
-                                                </TouchableOpacity>
-                                                <TouchableOpacity
-                                                    style={[
-                                                        styles.moodOption,
-                                                        sleepEntries.includes('Good') && styles.selectedOption,
-                                                    ]}
-                                                    onPress={() => toggleButton(sleepEntries, 'Good', setSleepEntries)}
-                                                >
-                                                    <Image source={require('../../assets/icons/sleep/sleep-good.png')}
-                                                        style={[
-                                                            styles.icon,
-                                                            sleepEntries.includes('Good') && { tintColor: 'black' }
-                                                        ]}
-                                                    />
-                                                    <Text style={[
-                                                        styles.iconLabel,
-                                                        sleepEntries.includes('Good') && { color: 'black' }
-                                                    ]}>Good</Text>
-                                                </TouchableOpacity>
+                                                        onPress={() => toggleButton(sleepEntries, sleep, setSleepEntries)}
+                                                    >
+                                                        <Image source={sleepIcons[sleep]}
+                                                            style={[
+                                                                styles.icon,
+                                                                sleepEntries.includes(sleep) && { tintColor: 'black' }
+                                                            ]}
+                                                        />
+                                                        <Text style={[
+                                                            styles.iconLabel,
+                                                            sleepEntries.includes(sleep) && { color: 'black' }
+                                                        ]}>{sleep}</Text>
+                                                    </TouchableOpacity>
+                                                ))}
                                             </View>
                                         </View>
                                     </View>
@@ -345,100 +294,150 @@ export default function EntriesScreen() {
                                         <View style={styles.groupBorder}>
                                             <Text style={styles.sectionTitle}>Activity</Text>
                                             <View style={styles.iconRow}>
-                                                <TouchableOpacity
-                                                    style={[
-                                                        styles.moodOption,
-                                                        activityEntries.includes('Yoga') && styles.selectedOption,
-                                                    ]}
-                                                    onPress={() => toggleButton(activityEntries, 'Yoga', setActivityEntries)}
-                                                >
-                                                    <Image source={require('../../assets/icons/activity/activity-yoga.png')}
+                                                {Object.keys(activityIcons).map((activity) => (
+                                                    <TouchableOpacity
+                                                        key={activity}
                                                         style={[
-                                                            styles.icon,
-                                                            activityEntries.includes('Yoga') && { tintColor: 'black' }
+                                                            styles.moodOption,
+                                                            activityEntries.includes(activity) && styles.selectedOption,
                                                         ]}
-                                                    />
-                                                    <Text style={[
-                                                        styles.iconLabel,
-                                                        activityEntries.includes('Yoga') && { color: 'black' }
-                                                    ]}>Yoga</Text>
-                                                </TouchableOpacity>
-                                                <TouchableOpacity
-                                                    style={[
-                                                        styles.moodOption,
-                                                        activityEntries.includes('Weights') && styles.selectedOption,
-                                                    ]}
-                                                    onPress={() => toggleButton(activityEntries, 'Weights', setActivityEntries)}
-                                                >
-                                                    <Image source={require('../../assets/icons/activity/activity-weights.png')}
-                                                        style={[
-                                                            styles.icon,
-                                                            activityEntries.includes('Weights') && { tintColor: 'black' }
-                                                        ]}
-                                                    />
-                                                    <Text style={[
-                                                        styles.iconLabel,
-                                                        activityEntries.includes('Weights') && { color: 'black' }
-                                                    ]}>Weights</Text>
-                                                </TouchableOpacity>
-                                                <TouchableOpacity
-                                                    style={[
-                                                        styles.moodOption,
-                                                        activityEntries.includes('Walk') && styles.selectedOption,
-                                                    ]}
-                                                    onPress={() => toggleButton(activityEntries, 'Walk', setActivityEntries)}
-                                                >
-                                                    <Image source={require('../../assets/icons/activity/activity-walk.png')}
-                                                        style={[
-                                                            styles.icon,
-                                                            activityEntries.includes('Walk') && { tintColor: 'black' }
-                                                        ]}
-                                                    />
-                                                    <Text style={[
-                                                        styles.iconLabel,
-                                                        activityEntries.includes('Walk') && { color: 'black' }
-                                                    ]}>Walk</Text>
-                                                </TouchableOpacity>
-                                                <TouchableOpacity
-                                                    style={[
-                                                        styles.moodOption,
-                                                        activityEntries.includes('Sport') && styles.selectedOption,
-                                                    ]}
-                                                    onPress={() => toggleButton(activityEntries, 'Sport', setActivityEntries)}
-                                                >
-                                                    <Image source={require('../../assets/icons/activity/activity-sport.png')}
-                                                        style={[
-                                                            styles.icon,
-                                                            activityEntries.includes('Sport') && { tintColor: 'black' }
-                                                        ]}
-                                                    />
-                                                    <Text style={[
-                                                        styles.iconLabel,
-                                                        activityEntries.includes('Sport') && { color: 'black' }
-                                                    ]}>Sport</Text>
-                                                </TouchableOpacity>
-                                                <TouchableOpacity
-                                                    style={[
-                                                        styles.moodOption,
-                                                        activityEntries.includes('HIT') && styles.selectedOption,
-                                                    ]}
-                                                    onPress={() => toggleButton(activityEntries, 'HIT', setActivityEntries)}
-                                                >
-                                                    <Image source={require('../../assets/icons/activity/activity-HIT.png')}
-                                                        style={[
-                                                            styles.icon,
-                                                            activityEntries.includes('HIT') && { tintColor: 'black' }
-                                                        ]}
-                                                    />
-                                                    <Text style={[
-                                                        styles.iconLabel,
-                                                        activityEntries.includes('HIT') && { color: 'black' }
-                                                    ]}>HIT</Text>
-                                                </TouchableOpacity>
+                                                        onPress={() => toggleButton(activityEntries, activity, setActivityEntries)}
+                                                    >
+                                                        <Image source={activityIcons[activity]}
+                                                            style={[
+                                                                styles.icon,
+                                                                activityEntries.includes(activity) && { tintColor: 'black' }
+                                                            ]}
+                                                        />
+                                                        <Text style={[
+                                                            styles.iconLabel,
+                                                            activityEntries.includes(activity) && { color: 'black' }
+                                                        ]}>{activity}</Text>
+                                                    </TouchableOpacity>
+                                                ))}
                                             </View>
                                         </View>
                                     </View>
+
+                                    <TouchableOpacity
+                                        style={styles.logButton}
+                                        onPress={handleNextToMood} // Move to the mood step
+                                    >
+                                        <Text style={styles.logButtonText}>Next</Text>
+                                    </TouchableOpacity>
                                 </ScrollView>
+                            </>
+                        )}
+
+                        {/* Step 3: Mood, Energy, and Stress */}
+                        {currentStep === 'mood' && (
+                            <>
+                                <TouchableOpacity
+                                    style={styles.backButton}
+                                    onPress={() => setCurrentStep('details')}
+                                >
+                                    <Text style={styles.backButtonText}>← Back</Text>
+                                </TouchableOpacity>
+
+                                <Text style={styles.modalTitle}>Track your Mood, Energy, and Stress</Text>
+
+                                {/* Mood Section */}
+                                <View style={styles.groupContainer}>
+                                    <View style={styles.groupBorder}>
+                                        <Text style={styles.sectionTitle}>Mood</Text>
+                                        <View style={styles.iconRow}>
+                                            {Object.keys(moodIcons).map((mood) => (
+                                                <TouchableOpacity
+                                                    key={mood}
+                                                    style={[
+                                                        styles.moodOption,
+                                                        selectedMood === mood && styles.selectedOption,
+                                                    ]}
+                                                    onPress={() => setSelectedMood(mood)}
+                                                >
+                                                    <Image source={moodIcons[mood]}
+                                                        style={[
+                                                            styles.icon,
+                                                            selectedMood === mood && { tintColor: 'black' }
+                                                        ]}
+                                                    />
+                                                    <Text style={[
+                                                        styles.iconLabel,
+                                                        selectedMood === mood && { color: 'black' }
+                                                    ]}>{mood}</Text>
+                                                </TouchableOpacity>
+                                            ))}
+                                        </View>
+                                    </View>
+                                </View>
+
+                                {/* Energy Section */}
+                                <View style={styles.groupContainer}>
+                                    <View style={styles.groupBorder}>
+                                        <Text style={styles.sectionTitle}>Energy</Text>
+                                        <View style={styles.iconRow}>
+                                            {Object.keys(energyIcons).map((energy) => (
+                                                <TouchableOpacity
+                                                    key={energy}
+                                                    style={[
+                                                        styles.moodOption,
+                                                        selectedEnergy === energy && styles.selectedOption,
+                                                    ]}
+                                                    onPress={() => setSelectedEnergy(energy)}
+                                                >
+                                                    <Image source={energyIcons[energy]}
+                                                        style={[
+                                                            styles.icon,
+                                                            selectedEnergy === energy && { tintColor: 'black' }
+                                                        ]}
+                                                    />
+                                                    <Text style={[
+                                                        styles.iconLabel,
+                                                        selectedEnergy === energy && { color: 'black' }
+                                                    ]}>{energy}</Text>
+                                                </TouchableOpacity>
+                                            ))}
+                                        </View>
+                                    </View>
+                                </View>
+
+                                {/* Stress Section */}
+                                <View style={styles.groupContainer}>
+                                    <View style={styles.groupBorder}>
+                                        <Text style={styles.sectionTitle}>Stress</Text>
+                                        <View style={styles.iconRow}>
+                                            {Object.keys(stressIcons).map((stress) => (
+                                                <TouchableOpacity
+                                                    key={stress}
+                                                    style={[
+                                                        styles.moodOption,
+                                                        selectedStress === stress && styles.selectedOption,
+                                                    ]}
+                                                    onPress={() => setSelectedStress(stress)}
+                                                >
+                                                    <Image source={stressIcons[stress]}
+                                                        style={[
+                                                            styles.icon,
+                                                            selectedStress === stress && { tintColor: 'black' }
+                                                        ]}
+                                                    />
+                                                    <Text style={[
+                                                        styles.iconLabel,
+                                                        selectedStress === stress && { color: 'black' }
+                                                    ]}>{stress}</Text>
+                                                </TouchableOpacity>
+                                            ))}
+                                        </View>
+                                    </View>
+                                </View>
+
+                                {/* Log Entry Button */}
+                                <TouchableOpacity
+                                    style={styles.logButton}
+                                    onPress={logEntry}  // Log the entry
+                                >
+                                    <Text style={styles.logButtonText}>Log Entry</Text>
+                                </TouchableOpacity>
                             </>
                         )}
                     </View>
@@ -447,6 +446,11 @@ export default function EntriesScreen() {
         </View>
     );
 }
+
+
+
+
+
 
 const styles = StyleSheet.create({
     container: {
@@ -566,5 +570,55 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         marginTop: 2,
         marginBottom: 5,
+    },
+    logButton: {
+        backgroundColor: '#de0f3f',
+        borderRadius: 5,
+        padding: 15,
+        alignItems: 'center',
+        marginTop: 20,
+    },
+    logButtonText: {
+        color: '#ffffff',
+        fontWeight: 'bold',
+    },
+    entryCard: {
+        backgroundColor: '#4c4c4c',
+        borderRadius: 10,
+        padding: 10,
+        marginBottom: 10,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+    },
+    entryContent: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+    },
+    summary: {
+        color: '#ffffff',
+        fontSize: 14,
+    },
+    date: {
+        color: '#ffffff',
+        fontWeight: 'bold',
+        marginBottom: 5,
+    },
+    wellBeingIcon: {
+        height: 50,
+        width: 50,
+        resizeMode: 'contain',
+        tintColor: '#ffffff',
+    },
+    logButton: {
+        backgroundColor: '#de0f3f',
+        borderRadius: 5,
+        padding: 15,
+        alignItems: 'center',
+        marginTop: 20,
+    },
+    logButtonText: {
+        color: '#ffffff',
+        fontWeight: 'bold',
     },
 });
