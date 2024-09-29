@@ -23,7 +23,7 @@ class MongoDbFacade:
         document.save()
 
     def get_user_by_id(self, id: str) -> str:
-        return User.objects(id=id).first()
+        return User.objects(uid=id).first()
 
 
 mongo_db_facade = MongoDbFacade()

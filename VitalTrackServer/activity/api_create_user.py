@@ -17,7 +17,7 @@ def create_user():
     if not email:
         return jsonify({"error": "Email is required"}), 400
 
-    user = User(name=name, email=email, age=age, medications=medications)
+    user = User(uid=uid,name=name, email=email, age=age, entries=entries, medications=medications)
     mongo_db_facade.save(user)
 
     return jsonify({"message": "User created successfully"}), 201
