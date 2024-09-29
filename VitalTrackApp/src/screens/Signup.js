@@ -1,7 +1,6 @@
-import auth from '@react-native-firebase/auth';
-import {useNavigation} from '@react-navigation/native';
-import React, {useState} from 'react';
+import React from 'react';
 import {
+  Alert,
   Image,
   StyleSheet,
   Text,
@@ -10,31 +9,39 @@ import {
   View,
 } from 'react-native';
 
-export default function LoginScreen() {
+import auth from '@react-native-firebase/auth';
+import {useNavigation} from '@react-navigation/native';
+import {useState} from 'react';
+
+export default function SignupScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const navigation = useNavigation();
+  const baseUrl = 'http://10.0.2.2:5000';
 
   function handleSubmit() {
-    loginUser(email, password);
+    createUser(email, password);
   }
 
-  async function loginUser(email, password) {
+  async function createUser(email, password) {
     try {
-      const userCredential = await auth().signInWithEmailAndPassword(
-        email,
-        password,
-      );
-      const user = userCredential.user;
-      console.log('User signed in!', user);
+      await auth().createUserWithEmailAndPassword(email, password);
 
-      if (navigation) {
-        navigation.navigate('Home');
-      } else {
-        console.log('Navigation object is undefined');
-      }
+      const response = await fetch(`${baseUrl}/createUser`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({email}),
+      });
+
+      const data = await response.json();
+      console.log('User created in database:', data);
+
+      Alert.alert('User created successfully');
+      navigation.navigate('Home');
     } catch (error) {
-      console.error('Error during sign in:', error.message);
+      Alert.alert(error.code);
     }
   }
 
@@ -51,26 +58,26 @@ export default function LoginScreen() {
         placeholder="Email"
         style={styles.input}
         placeholderTextColor="#888"
-        onChangeText={email => setEmail(email)}
+        onChangeText={text => setEmail(text)}
       />
       <TextInput
         placeholder="Password"
         secureTextEntry
         style={styles.input}
         placeholderTextColor="#888"
-        onChangeText={password => setPassword(password)}
+        onChangeText={text => setPassword(text)}
       />
-      <Text style={styles.forgotPassword}>Forgot Password?</Text>
 
       <TouchableOpacity style={styles.button} onPress={handleSubmit}>
-        <Text style={styles.buttonText}>Sign In</Text>
+        <Text style={styles.buttonText}>Sign Up</Text>
       </TouchableOpacity>
+
       <View style={styles.newToApp}>
-        <Text style={styles.smallText}>New to VitalTrack? </Text>
+        <Text style={styles.smallText}>Have an Account? </Text>
         <Text
           style={styles.joinNow}
-          onPress={() => navigation.navigate('Signup')}>
-          Join Now
+          onPress={() => navigation.navigate('Login')}>
+          Sign In
         </Text>
       </View>
     </View>
