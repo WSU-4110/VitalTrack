@@ -4,7 +4,6 @@
  *
  * @format
  */
-
 import React from 'react';
 import type {PropsWithChildren} from 'react';
 import {
@@ -16,7 +15,6 @@ import {
   useColorScheme,
   View,
 } from 'react-native';
-
 import {
   Colors,
   DebugInstructions,
@@ -24,11 +22,9 @@ import {
   LearnMoreLinks,
   ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
-
 type SectionProps = PropsWithChildren<{
   title: string;
 }>;
-
 function Section({children, title}: SectionProps): React.JSX.Element {
   const isDarkMode = useColorScheme() === 'dark';
   return (
@@ -54,14 +50,11 @@ function Section({children, title}: SectionProps): React.JSX.Element {
     </View>
   );
 }
-
 function App(): React.JSX.Element {
   const isDarkMode = useColorScheme() === 'dark';
-
   const backgroundStyle = {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
   };
-
   return (
     <SafeAreaView style={backgroundStyle}>
       <StatusBar
@@ -95,7 +88,6 @@ function App(): React.JSX.Element {
     </SafeAreaView>
   );
 }
-
 const styles = StyleSheet.create({
   sectionContainer: {
     marginTop: 32,
@@ -114,5 +106,4 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
 });
-
 export default App;
