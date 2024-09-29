@@ -83,6 +83,9 @@ export default function EntriesScreen() {
                                 <View style={styles.leftColumn}>
                                     <Text style={styles.label}>Overall well-being:</Text>
                                     <Text style={styles.label}>Symptoms:</Text>
+                                    <Text style={styles.label}>Sleep:</Text>
+                                    <Text style={styles.label}>Activity:</Text>
+
                                 </View>
 
                                 {/* Right Column (Icons/Buttons) */}
@@ -99,25 +102,25 @@ export default function EntriesScreen() {
                                             style={styles.moodOption}
                                             onPress={() => toggleButton(moodEntries, 'Poor', setMoodEntries)}
                                         >
-                                            <Image source={require('../../assets/icons/well-being/well-being-verypoor.png')} style={styles.icon} />
+                                            <Image source={require('../../assets/icons/well-being/well-being-poor.png')} style={styles.icon} />
                                         </TouchableOpacity>
                                         <TouchableOpacity
                                             style={styles.moodOption}
                                             onPress={() => toggleButton(moodEntries, 'Okay', setMoodEntries)}
                                         >
-                                            <Image source={require('../../assets/icons/well-being/well-being-verypoor.png')} style={styles.icon} />
+                                            <Image source={require('../../assets/icons/well-being/well-being-okay.png')} style={styles.icon} />
                                         </TouchableOpacity>
                                         <TouchableOpacity
                                             style={styles.moodOption}
                                             onPress={() => toggleButton(moodEntries, 'Good', setMoodEntries)}
                                         >
-                                            <Image source={require('../../assets/icons/well-being/well-being-verypoor.png')} style={styles.icon} />
+                                            <Image source={require('../../assets/icons/well-being/well-being-good.png')} style={styles.icon} />
                                         </TouchableOpacity>
                                         <TouchableOpacity
                                             style={styles.moodOption}
                                             onPress={() => toggleButton(moodEntries, 'Great', setMoodEntries)}
                                         >
-                                            <Image source={require('../../assets/icons/well-being/well-being-verypoor.png')} style={styles.icon} />
+                                            <Image source={require('../../assets/icons/well-being/well-being-great.png')} style={styles.icon} />
                                         </TouchableOpacity>
                                     </View>
 
@@ -127,31 +130,86 @@ export default function EntriesScreen() {
                                             style={styles.moodOption}
                                             onPress={() => toggleButton(symptomsEntries, 'Sneeze', setSymptomsEntries)}
                                         >
-                                            <Image source={require('../../assets/icons/well-being/well-being-verypoor.png')} style={styles.icon} />
+                                            <Image source={require('../../assets/icons/symptoms/symptoms-sneeze.png')} style={styles.icon} />
                                         </TouchableOpacity>
                                         <TouchableOpacity
                                             style={styles.moodOption}
                                             onPress={() => toggleButton(symptomsEntries, 'Nausea', setSymptomsEntries)}
                                         >
-                                            <Image source={require('../../assets/icons/well-being/well-being-verypoor.png')} style={styles.icon} />
+                                            <Image source={require('../../assets/icons/symptoms/symptoms-nausea.png')} style={styles.icon} />
                                         </TouchableOpacity>
                                         <TouchableOpacity
                                             style={styles.moodOption}
                                             onPress={() => toggleButton(symptomsEntries, 'Headache', setSymptomsEntries)}
                                         >
-                                            <Image source={require('../../assets/icons/well-being/well-being-verypoor.png')} style={styles.icon} />
+                                            <Image source={require('../../assets/icons/symptoms/symptoms-headache.png')} style={styles.icon} />
                                         </TouchableOpacity>
                                         <TouchableOpacity
                                             style={styles.moodOption}
                                             onPress={() => toggleButton(symptomsEntries, 'Fever', setSymptomsEntries)}
                                         >
-                                            <Image source={require('../../assets/icons/well-being/well-being-verypoor.png')} style={styles.icon} />
+                                            <Image source={require('../../assets/icons/symptoms/symptoms-fever.png')} style={styles.icon} />
                                         </TouchableOpacity>
                                         <TouchableOpacity
                                             style={styles.moodOption}
                                             onPress={() => toggleButton(symptomsEntries, 'Fatigue', setSymptomsEntries)}
                                         >
-                                            <Image source={require('../../assets/icons/well-being/well-being-verypoor.png')} style={styles.icon} />
+                                            <Image source={require('../../assets/icons/symptoms/symptoms-fatigue.png')} style={styles.icon} />
+                                        </TouchableOpacity>
+                                    </View>
+                                    {/* Sleep icons row */}
+                                    <View style={styles.iconRow}>
+                                        <TouchableOpacity
+                                            style={styles.moodOption}
+                                            onPress={() => toggleButton(moodEntries, 'Bad', setMoodEntries)}
+                                        >
+                                            <Image source={require('../../assets/icons/sleep/sleep-bad.png')} style={styles.icon} />
+                                        </TouchableOpacity>
+                                        <TouchableOpacity
+                                            style={styles.moodOption}
+                                            onPress={() => toggleButton(moodEntries, 'Moderate', setMoodEntries)}
+                                        >
+                                            <Image source={require('../../assets/icons/sleep/sleep-moderate.png')} style={styles.icon} />
+                                        </TouchableOpacity>
+                                        <TouchableOpacity
+                                            style={styles.moodOption}
+                                            onPress={() => toggleButton(moodEntries, 'Good', setMoodEntries)}
+                                        >
+                                            <Image source={require('../../assets/icons/sleep/sleep-good.png')} style={styles.icon} />
+                                        </TouchableOpacity>
+
+                                    </View>
+                                    {/* Activity icons row */}
+                                    <View style={styles.iconRow}>
+                                        <TouchableOpacity
+                                            style={styles.moodOption}
+                                            onPress={() => toggleButton(moodEntries, 'Yoga', setMoodEntries)}
+                                        >
+                                            <Image source={require('../../assets/icons/activity/activity-yoga.png')} style={styles.icon} />
+                                        </TouchableOpacity>
+                                        <TouchableOpacity
+                                            style={styles.moodOption}
+                                            onPress={() => toggleButton(moodEntries, 'Weights', setMoodEntries)}
+                                        >
+                                            <Image source={require('../../assets/icons/activity/activity-weights.png')} style={styles.icon} />
+                                        </TouchableOpacity>
+                                        <TouchableOpacity
+                                            style={styles.moodOption}
+                                            onPress={() => toggleButton(moodEntries, 'Walk', setMoodEntries)}
+                                        >
+                                            <Image source={require('../../assets/icons/activity/activity-walk.png')} style={styles.icon} />
+                                        </TouchableOpacity>
+                                        <TouchableOpacity
+                                            style={styles.moodOption}
+                                            onPress={() => toggleButton(moodEntries, 'Sport', setMoodEntries)}
+                                        >
+                                            <Image source={require('../../assets/icons/activity/activity-sport.png')} style={styles.icon} />
+                                        </TouchableOpacity>
+                                        <TouchableOpacity
+                                            style={styles.moodOption}
+                                            onPress={() => toggleButton(moodEntries, 'HIT', setMoodEntries)}
+                                        >
+                                            <Image source={require('../../assets/icons/activity/activity-HIT.png')} style={styles.icon} />
                                         </TouchableOpacity>
                                     </View>
                                 </View>
@@ -171,7 +229,6 @@ export default function EntriesScreen() {
         </View>
     );
 }
-
 const styles = StyleSheet.create({
     container: {
         flex: 1,
@@ -239,14 +296,14 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         backgroundColor: 'rgba(0, 0, 0, 0.5)',
-        padding: 20, // Ensure there's padding around the modal
+        padding: 20,
     },
     modalContent: {
         backgroundColor: '#4c4c4c',
         borderRadius: 10,
         padding: 35,
         alignItems: 'center',
-        maxHeight: '100%', // Set max height for the modal to prevent overflow
+        maxHeight: '100%',
         width: '100%',
     },
     scrollView: {
@@ -286,21 +343,24 @@ const styles = StyleSheet.create({
     label: {
         color: '#ffffff',
         fontSize: 18,
-        marginVertical: 10,
+        marginVertical: 23,
     },
     iconRow: {
         flexDirection: 'row',
-        justifyContent: 'space-around',
+        justifyContent: 'flex-start',
+        alignItems: 'center',
         marginVertical: 10,
+        flexWrap: 'wrap',
+        gap: 8,  // Adds space between icons horizontally and vertically
     },
     moodOption: {
-        // backgroundColor: '#000',
-        borderRadius: 5,
-        padding: 10,
         alignItems: 'center',
+        marginHorizontal: 5, // Reduce space between icons horizontally
+        marginVertical: 5,   // Reduce space between icons vertically
     },
     icon: {
-        height:40,
-        width:30,
+        height: 40,          // Fixed height for the icon
+        width: 40,           // Fixed width for the icon to keep it proportional
+        resizeMode: 'contain', // Ensures the icon fits within the defined dimensions
     },
 });
