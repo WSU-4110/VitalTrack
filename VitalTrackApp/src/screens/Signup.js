@@ -26,14 +26,18 @@ export default function SignupScreen() {
 
   async function createUser(email, password) {
     try {
-      await auth().createUserWithEmailAndPassword(email, password);
+      const userCredential = await auth().createUserWithEmailAndPassword(
+        email,
+        password,
+      );
+      const uid = userCredential.user.uid;
 
       const response = await fetch(`${baseUrl}/createUser`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({email}),
+        body: JSON.stringify({uid, email}),
       });
 
       const data = await response.json();
