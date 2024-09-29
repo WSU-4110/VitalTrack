@@ -6,229 +6,304 @@ import {
     TouchableOpacity,
     Modal,
     ScrollView,
-    FlatList,
     Image,
-
 } from 'react-native';
 
 export default function EntriesScreen() {
-    // State to manage modal visibility
     const [modalVisible, setModalVisible] = useState(false);
-    // State to store entries
-    const [entries, setEntries] = useState([]);
+    const [moodEntries, setMoodEntries] = useState([]);
+    const [symptomsEntries, setSymptomsEntries] = useState([]);
+    const [sleepEntries, setSleepEntries] = useState([]);
+    const [activityEntries, setActivityEntries] = useState([]);
 
-    // States for different entries
-    const [moodEntries, setMoodEntries] = useState([]);       // Empty list for mood entries
-    const [symptomsEntries, setSymptomsEntries] = useState([]); // Empty list for symptoms
+    const [currentStep, setCurrentStep] = useState('wellbeing');
 
-    // Reusable toggleButton function
     const toggleButton = (group, selection, setGroup) => {
         if (group.includes(selection)) {
-            setGroup(group.filter((e) => e !== selection)); // Update the group by filtering out the selection
+            setGroup(group.filter((e) => e !== selection));
         } else {
-            setGroup([...group, selection]); // Update the group by adding the selection
+            setGroup([...group, selection]);
         }
+    };
+
+    const handleWellBeingSelection = (selection) => {
+        toggleButton(moodEntries, selection, setMoodEntries);
+        setCurrentStep('details');
     };
 
     return (
         <View style={styles.container}>
-            {/* Header */}
             <View style={styles.header}>
                 <Text style={styles.title}>Entries</Text>
             </View>
 
-            {/* Tips */}
-            <View style={styles.tips}>
-                <Text style={styles.description}>
-                    You are feeling significantly better today
-                </Text>
-            </View>
-
-            {/* Entries List */}
-            <FlatList
-                data={entries}
-                keyExtractor={(item) => item.id}
-                renderItem={({ item }) => (
-                    <View style={styles.entryCard}>
-                        <Text style={styles.date}>{item.date}</Text>
-                        <Text style={styles.mood}>{item.mood}</Text>
-                    </View>
-                )}
-            />
-
-            {/* Button to open modal */}
             <TouchableOpacity
                 style={styles.button}
-                onPress={() => setModalVisible(true)}
+                onPress={() => {
+                    setModalVisible(true);
+                    setCurrentStep('wellbeing');
+                }}
             >
                 <Text style={styles.buttonText}>Add Entry</Text>
             </TouchableOpacity>
 
-            {/* Modal */}
+            {/* Full-Screen Modal */}
             <Modal
-                transparent={true}
+                transparent={false}
                 animationType="slide"
                 visible={modalVisible}
                 onRequestClose={() => setModalVisible(false)}
             >
                 <View style={styles.modalContainer}>
+                    {/* X Button at Top-Right */}
+                    <TouchableOpacity
+                        style={styles.closeButton}
+                        onPress={() => setModalVisible(false)}
+                    >
+                        <Text style={styles.closeButtonText}>X</Text>
+                    </TouchableOpacity>
+
                     <View style={styles.modalContent}>
-                        <Text style={styles.modalTitle}>Track your physical health</Text>
+                        {currentStep === 'details' && (
+                            <TouchableOpacity
+                                style={styles.backButton}
+                                onPress={() => setCurrentStep('wellbeing')}
+                            >
+                                <Text style={styles.backButtonText}>← Back</Text>
+                            </TouchableOpacity>
+                        )}
 
-                        {/* Scrollable content within modal */}
-                        <ScrollView style={styles.scrollView}>
-                            {/* Left and Right Columns Container */}
-                            <View style={styles.rowContainer}>
-                                {/* Left Column (Labels) */}
-                                <View style={styles.leftColumn}>
-                                    <Text style={styles.label}>Overall well-being:</Text>
-                                    <Text style={styles.label}>Symptoms:</Text>
-                                    <Text style={styles.label}>Sleep:</Text>
-                                    <Text style={styles.label}>Activity:</Text>
+                        {/* Well-being Selection */}
+                        {currentStep === 'wellbeing' ? (
+                            <>
+                                <Text style={styles.modalTitle}>How is your well-being today?</Text>
+                                <View style={styles.iconRow}>
+                                    <TouchableOpacity
+                                        style={[
+                                            styles.moodOption,
+                                            moodEntries.includes('Very Poor') && styles.selectedOption,
+                                        ]}
+                                        onPress={() => handleWellBeingSelection('Very Poor')}
+                                    >
+                                        <Image source={require('../../assets/icons/well-being/well-being-verypoor.png')} style={styles.icon} />
+                                        <Text style={styles.iconLabel}>Very Poor</Text>
+                                    </TouchableOpacity>
 
+                                    <TouchableOpacity
+                                        style={[
+                                            styles.moodOption,
+                                            moodEntries.includes('Poor') && styles.selectedOption,
+                                        ]}
+                                        onPress={() => handleWellBeingSelection('Poor')}
+                                    >
+                                        <Image source={require('../../assets/icons/well-being/well-being-poor.png')} style={styles.icon} />
+                                        <Text style={styles.iconLabel}>Poor</Text>
+                                    </TouchableOpacity>
+
+                                    <TouchableOpacity
+                                        style={[
+                                            styles.moodOption,
+                                            moodEntries.includes('Okay') && styles.selectedOption,
+                                        ]}
+                                        onPress={() => handleWellBeingSelection('Okay')}
+                                    >
+                                        <Image source={require('../../assets/icons/well-being/well-being-okay.png')} style={styles.icon} />
+                                        <Text style={styles.iconLabel}>Okay</Text>
+                                    </TouchableOpacity>
+
+                                    <TouchableOpacity
+                                        style={[
+                                            styles.moodOption,
+                                            moodEntries.includes('Good') && styles.selectedOption,
+                                        ]}
+                                        onPress={() => handleWellBeingSelection('Good')}
+                                    >
+                                        <Image source={require('../../assets/icons/well-being/well-being-good.png')} style={styles.icon} />
+                                        <Text style={styles.iconLabel}>Good</Text>
+                                    </TouchableOpacity>
+
+                                    <TouchableOpacity
+                                        style={[
+                                            styles.moodOption,
+                                            moodEntries.includes('Great') && styles.selectedOption,
+                                        ]}
+                                        onPress={() => handleWellBeingSelection('Great')}
+                                    >
+                                        <Image source={require('../../assets/icons/well-being/well-being-great.png')} style={styles.icon} />
+                                        <Text style={styles.iconLabel}>Great</Text>
+                                    </TouchableOpacity>
                                 </View>
-
-                                {/* Right Column (Icons/Buttons) */}
-                                <View style={styles.rightColumn}>
-                                    {/* Overall Well-being Row */}
-                                    <View style={styles.iconRow}>
-                                        <TouchableOpacity
-                                            style={styles.moodOption}
-                                            onPress={() => toggleButton(moodEntries, 'Very Poor', setMoodEntries)}
-                                        >
-                                            <Image source={require('../../assets/icons/well-being/well-being-verypoor.png')} style={styles.icon} />
-                                        </TouchableOpacity>
-                                        <TouchableOpacity
-                                            style={styles.moodOption}
-                                            onPress={() => toggleButton(moodEntries, 'Poor', setMoodEntries)}
-                                        >
-                                            <Image source={require('../../assets/icons/well-being/well-being-poor.png')} style={styles.icon} />
-                                        </TouchableOpacity>
-                                        <TouchableOpacity
-                                            style={styles.moodOption}
-                                            onPress={() => toggleButton(moodEntries, 'Okay', setMoodEntries)}
-                                        >
-                                            <Image source={require('../../assets/icons/well-being/well-being-okay.png')} style={styles.icon} />
-                                        </TouchableOpacity>
-                                        <TouchableOpacity
-                                            style={styles.moodOption}
-                                            onPress={() => toggleButton(moodEntries, 'Good', setMoodEntries)}
-                                        >
-                                            <Image source={require('../../assets/icons/well-being/well-being-good.png')} style={styles.icon} />
-                                        </TouchableOpacity>
-                                        <TouchableOpacity
-                                            style={styles.moodOption}
-                                            onPress={() => toggleButton(moodEntries, 'Great', setMoodEntries)}
-                                        >
-                                            <Image source={require('../../assets/icons/well-being/well-being-great.png')} style={styles.icon} />
-                                        </TouchableOpacity>
+                            </>
+                        ) : (
+                            <>
+                                <Text style={styles.modalTitle}>Select Symptoms, Sleep, and Activity</Text>
+                                <ScrollView style={styles.scrollView}>
+                                    {/* Symptoms Section */}
+                                    <View style={styles.groupContainer}>
+                                        <View style={styles.groupBorder}>
+                                            <Text style={styles.sectionTitle}>Symptoms</Text>
+                                            <View style={styles.iconRow}>
+                                                <TouchableOpacity
+                                                    style={[
+                                                        styles.moodOption,
+                                                        symptomsEntries.includes('Sneeze') && styles.selectedOption,
+                                                    ]}
+                                                    onPress={() => toggleButton(symptomsEntries, 'Sneeze', setSymptomsEntries)}
+                                                >
+                                                    <Image source={require('../../assets/icons/symptoms/symptoms-sneeze.png')} style={styles.icon} />
+                                                    <Text style={styles.iconLabel}>Sneeze</Text>
+                                                </TouchableOpacity>
+                                                <TouchableOpacity
+                                                    style={[
+                                                        styles.moodOption,
+                                                        symptomsEntries.includes('Nausea') && styles.selectedOption,
+                                                    ]}
+                                                    onPress={() => toggleButton(symptomsEntries, 'Nausea', setSymptomsEntries)}
+                                                >
+                                                    <Image source={require('../../assets/icons/symptoms/symptoms-nausea.png')} style={styles.icon} />
+                                                    <Text style={styles.iconLabel}>Nausea</Text>
+                                                </TouchableOpacity>
+                                                <TouchableOpacity
+                                                    style={[
+                                                        styles.moodOption,
+                                                        symptomsEntries.includes('Headache') && styles.selectedOption,
+                                                    ]}
+                                                    onPress={() => toggleButton(symptomsEntries, 'Headache', setSymptomsEntries)}
+                                                >
+                                                    <Image source={require('../../assets/icons/symptoms/symptoms-headache.png')} style={styles.icon} />
+                                                    <Text style={styles.iconLabel}>Headache</Text>
+                                                </TouchableOpacity>
+                                                <TouchableOpacity
+                                                    style={[
+                                                        styles.moodOption,
+                                                        symptomsEntries.includes('Fever') && styles.selectedOption,
+                                                    ]}
+                                                    onPress={() => toggleButton(symptomsEntries, 'Fever', setSymptomsEntries)}
+                                                >
+                                                    <Image source={require('../../assets/icons/symptoms/symptoms-fever.png')} style={styles.icon} />
+                                                    <Text style={styles.iconLabel}>Fever</Text>
+                                                </TouchableOpacity>
+                                                <TouchableOpacity
+                                                    style={[
+                                                        styles.moodOption,
+                                                        symptomsEntries.includes('Fatigue') && styles.selectedOption,
+                                                    ]}
+                                                    onPress={() => toggleButton(symptomsEntries, 'Fatigue', setSymptomsEntries)}
+                                                >
+                                                    <Image source={require('../../assets/icons/symptoms/symptoms-fatigue.png')} style={styles.icon} />
+                                                    <Text style={styles.iconLabel}>Fatigue</Text>
+                                                </TouchableOpacity>
+                                            </View>
+                                        </View>
                                     </View>
 
-                                    {/* Symptoms Row */}
-                                    <View style={styles.iconRow}>
-                                        <TouchableOpacity
-                                            style={styles.moodOption}
-                                            onPress={() => toggleButton(symptomsEntries, 'Sneeze', setSymptomsEntries)}
-                                        >
-                                            <Image source={require('../../assets/icons/symptoms/symptoms-sneeze.png')} style={styles.icon} />
-                                        </TouchableOpacity>
-                                        <TouchableOpacity
-                                            style={styles.moodOption}
-                                            onPress={() => toggleButton(symptomsEntries, 'Nausea', setSymptomsEntries)}
-                                        >
-                                            <Image source={require('../../assets/icons/symptoms/symptoms-nausea.png')} style={styles.icon} />
-                                        </TouchableOpacity>
-                                        <TouchableOpacity
-                                            style={styles.moodOption}
-                                            onPress={() => toggleButton(symptomsEntries, 'Headache', setSymptomsEntries)}
-                                        >
-                                            <Image source={require('../../assets/icons/symptoms/symptoms-headache.png')} style={styles.icon} />
-                                        </TouchableOpacity>
-                                        <TouchableOpacity
-                                            style={styles.moodOption}
-                                            onPress={() => toggleButton(symptomsEntries, 'Fever', setSymptomsEntries)}
-                                        >
-                                            <Image source={require('../../assets/icons/symptoms/symptoms-fever.png')} style={styles.icon} />
-                                        </TouchableOpacity>
-                                        <TouchableOpacity
-                                            style={styles.moodOption}
-                                            onPress={() => toggleButton(symptomsEntries, 'Fatigue', setSymptomsEntries)}
-                                        >
-                                            <Image source={require('../../assets/icons/symptoms/symptoms-fatigue.png')} style={styles.icon} />
-                                        </TouchableOpacity>
+                                    {/* Sleep Section */}
+                                    <View style={styles.groupContainer}>
+                                        <View style={styles.groupBorder}>
+                                            <Text style={styles.sectionTitle}>Sleep</Text>
+                                            <View style={styles.iconRow}>
+                                                <TouchableOpacity
+                                                    style={[
+                                                        styles.moodOption,
+                                                        sleepEntries.includes('Bad') && styles.selectedOption,
+                                                    ]}
+                                                    onPress={() => toggleButton(sleepEntries, 'Bad', setSleepEntries)}
+                                                >
+                                                    <Image source={require('../../assets/icons/sleep/sleep-bad.png')} style={styles.icon} />
+                                                    <Text style={styles.iconLabel}>Bad</Text>
+                                                </TouchableOpacity>
+                                                <TouchableOpacity
+                                                    style={[
+                                                        styles.moodOption,
+                                                        sleepEntries.includes('Moderate') && styles.selectedOption,
+                                                    ]}
+                                                    onPress={() => toggleButton(sleepEntries, 'Moderate', setSleepEntries)}
+                                                >
+                                                    <Image source={require('../../assets/icons/sleep/sleep-moderate.png')} style={styles.icon} />
+                                                    <Text style={styles.iconLabel}>Moderate</Text>
+                                                </TouchableOpacity>
+                                                <TouchableOpacity
+                                                    style={[
+                                                        styles.moodOption,
+                                                        sleepEntries.includes('Good') && styles.selectedOption,
+                                                    ]}
+                                                    onPress={() => toggleButton(sleepEntries, 'Good', setSleepEntries)}
+                                                >
+                                                    <Image source={require('../../assets/icons/sleep/sleep-good.png')} style={styles.icon} />
+                                                    <Text style={styles.iconLabel}>Good</Text>
+                                                </TouchableOpacity>
+                                            </View>
+                                        </View>
                                     </View>
-                                    {/* Sleep icons row */}
-                                    <View style={styles.iconRow}>
-                                        <TouchableOpacity
-                                            style={styles.moodOption}
-                                            onPress={() => toggleButton(moodEntries, 'Bad', setMoodEntries)}
-                                        >
-                                            <Image source={require('../../assets/icons/sleep/sleep-bad.png')} style={styles.icon} />
-                                        </TouchableOpacity>
-                                        <TouchableOpacity
-                                            style={styles.moodOption}
-                                            onPress={() => toggleButton(moodEntries, 'Moderate', setMoodEntries)}
-                                        >
-                                            <Image source={require('../../assets/icons/sleep/sleep-moderate.png')} style={styles.icon} />
-                                        </TouchableOpacity>
-                                        <TouchableOpacity
-                                            style={styles.moodOption}
-                                            onPress={() => toggleButton(moodEntries, 'Good', setMoodEntries)}
-                                        >
-                                            <Image source={require('../../assets/icons/sleep/sleep-good.png')} style={styles.icon} />
-                                        </TouchableOpacity>
 
+                                    {/* Activity Section */}
+                                    <View style={styles.groupContainer}>
+                                        <View style={styles.groupBorder}>
+                                            <Text style={styles.sectionTitle}>Activity</Text>
+                                            <View style={styles.iconRow}>
+                                                <TouchableOpacity
+                                                    style={[
+                                                        styles.moodOption,
+                                                        activityEntries.includes('Yoga') && styles.selectedOption,
+                                                    ]}
+                                                    onPress={() => toggleButton(activityEntries, 'Yoga', setActivityEntries)}
+                                                >
+                                                    <Image source={require('../../assets/icons/activity/activity-yoga.png')} style={styles.icon} />
+                                                    <Text style={styles.iconLabel}>Yoga</Text>
+                                                </TouchableOpacity>
+                                                <TouchableOpacity
+                                                    style={[
+                                                        styles.moodOption,
+                                                        activityEntries.includes('Weights') && styles.selectedOption,
+                                                    ]}
+                                                    onPress={() => toggleButton(activityEntries, 'Weights', setActivityEntries)}
+                                                >
+                                                    <Image source={require('../../assets/icons/activity/activity-weights.png')} style={styles.icon} />
+                                                    <Text style={styles.iconLabel}>Weights</Text>
+                                                </TouchableOpacity>
+                                                <TouchableOpacity
+                                                    style={[
+                                                        styles.moodOption,
+                                                        activityEntries.includes('Walk') && styles.selectedOption,
+                                                    ]}
+                                                    onPress={() => toggleButton(activityEntries, 'Walk', setActivityEntries)}
+                                                >
+                                                    <Image source={require('../../assets/icons/activity/activity-walk.png')} style={styles.icon} />
+                                                    <Text style={styles.iconLabel}>Walk</Text>
+                                                </TouchableOpacity>
+                                                <TouchableOpacity
+                                                    style={[
+                                                        styles.moodOption,
+                                                        activityEntries.includes('Sport') && styles.selectedOption,
+                                                    ]}
+                                                    onPress={() => toggleButton(activityEntries, 'Sport', setActivityEntries)}
+                                                >
+                                                    <Image source={require('../../assets/icons/activity/activity-sport.png')} style={styles.icon} />
+                                                    <Text style={styles.iconLabel}>Sport</Text>
+                                                </TouchableOpacity>
+                                                <TouchableOpacity
+                                                    style={[
+                                                        styles.moodOption,
+                                                        activityEntries.includes('HIT') && styles.selectedOption,
+                                                    ]}
+                                                    onPress={() => toggleButton(activityEntries, 'HIT', setActivityEntries)}
+                                                >
+                                                    <Image source={require('../../assets/icons/activity/activity-HIT.png')} style={styles.icon} />
+                                                    <Text style={styles.iconLabel}>HIT</Text>
+                                                </TouchableOpacity>
+                                            </View>
+                                        </View>
                                     </View>
-                                    {/* Activity icons row */}
-                                    <View style={styles.iconRow}>
-                                        <TouchableOpacity
-                                            style={styles.moodOption}
-                                            onPress={() => toggleButton(moodEntries, 'Yoga', setMoodEntries)}
-                                        >
-                                            <Image source={require('../../assets/icons/activity/activity-yoga.png')} style={styles.icon} />
-                                        </TouchableOpacity>
-                                        <TouchableOpacity
-                                            style={styles.moodOption}
-                                            onPress={() => toggleButton(moodEntries, 'Weights', setMoodEntries)}
-                                        >
-                                            <Image source={require('../../assets/icons/activity/activity-weights.png')} style={styles.icon} />
-                                        </TouchableOpacity>
-                                        <TouchableOpacity
-                                            style={styles.moodOption}
-                                            onPress={() => toggleButton(moodEntries, 'Walk', setMoodEntries)}
-                                        >
-                                            <Image source={require('../../assets/icons/activity/activity-walk.png')} style={styles.icon} />
-                                        </TouchableOpacity>
-                                        <TouchableOpacity
-                                            style={styles.moodOption}
-                                            onPress={() => toggleButton(moodEntries, 'Sport', setMoodEntries)}
-                                        >
-                                            <Image source={require('../../assets/icons/activity/activity-sport.png')} style={styles.icon} />
-                                        </TouchableOpacity>
-                                        <TouchableOpacity
-                                            style={styles.moodOption}
-                                            onPress={() => toggleButton(moodEntries, 'HIT', setMoodEntries)}
-                                        >
-                                            <Image source={require('../../assets/icons/activity/activity-HIT.png')} style={styles.icon} />
-                                        </TouchableOpacity>
-                                    </View>
-                                </View>
-                            </View>
-                        </ScrollView>
-
-                        {/* Cancel Button */}
-                        <TouchableOpacity
-                            style={styles.cancelButton}
-                            onPress={() => setModalVisible(false)}
-                        >
-                            <Text style={styles.cancelButtonText}>Cancel</Text>
-                        </TouchableOpacity>
+                                </ScrollView>
+                            </>
+                        )}
                     </View>
                 </View>
             </Modal>
         </View>
     );
 }
+
 const styles = StyleSheet.create({
     container: {
         flex: 1,
@@ -254,33 +329,6 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         marginBottom: 20,
     },
-    tips: {
-        backgroundColor: '#4c4c4c',
-        height: 50,
-        borderRadius: 20,
-        marginBottom: 20,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    description: {
-        color: '#ffffff',
-        textAlign: 'center',
-        marginBottom: 20,
-    },
-    entryCard: {
-        backgroundColor: '#000',
-        borderRadius: 10,
-        padding: 15,
-        marginBottom: 15,
-    },
-    date: {
-        color: '#ffffff',
-        fontWeight: 'bold',
-    },
-    mood: {
-        color: '#00ff00',
-        fontSize: 18,
-    },
     button: {
         backgroundColor: '#ffffff',
         borderRadius: 5,
@@ -294,13 +342,20 @@ const styles = StyleSheet.create({
     },
     modalContainer: {
         flex: 1,
-        justifyContent: 'center',
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
-        padding: 20,
+        backgroundColor: '#000000',
+        justifyContent: 'flex-start',
+    },
+    closeButton: {
+        position: 'absolute',
+        top: 30,
+        right: 20,
+        zIndex: 1,
+    },
+    closeButtonText: {
+        fontSize: 24,
+        color: '#ffffff',
     },
     modalContent: {
-        backgroundColor: '#4c4c4c',
-        borderRadius: 10,
         padding: 35,
         alignItems: 'center',
         maxHeight: '100%',
@@ -314,36 +369,29 @@ const styles = StyleSheet.create({
         fontSize: 24,
         marginBottom: 15,
     },
-    cancelButton: {
-        marginTop: 15,
-        padding: 10,
-        width: '100%',
-        backgroundColor: '#ff0000',
-        borderRadius: 5,
-        alignItems: 'center',
+    backButton: {
+        alignSelf: 'flex-start',
+        marginBottom: 15,
     },
-    cancelButtonText: {
+    backButtonText: {
         color: '#ffffff',
         fontSize: 18,
     },
-    rowContainer: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'flex-start',
-        width: '100%',
-    },
-    leftColumn: {
-        flex: 1,
-        justifyContent: 'flex-start',
-    },
-    rightColumn: {
-        flex: 2,
-        justifyContent: 'flex-start',
-    },
-    label: {
+    sectionTitle: {
         color: '#ffffff',
-        fontSize: 18,
-        marginVertical: 23,
+        fontSize: 20,
+        marginBottom: 10,
+        textAlign: 'center',
+    },
+    groupContainer: {
+        marginBottom: 20,
+    },
+    groupBorder: {
+        borderColor: '#4c4c4c',
+        backgroundColor: '#4c4c4c',
+        borderWidth: 2,
+        borderRadius: 10,
+        padding: 15,
     },
     iconRow: {
         flexDirection: 'row',
@@ -351,16 +399,28 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         marginVertical: 10,
         flexWrap: 'wrap',
-        gap: 8,  // Adds space between icons horizontally and vertically
-    },
-    moodOption: {
-        alignItems: 'center',
-        marginHorizontal: 5, // Reduce space between icons horizontally
-        marginVertical: 5,   // Reduce space between icons vertically
+        gap: 8,
     },
     icon: {
-        height: 40,          // Fixed height for the icon
-        width: 40,           // Fixed width for the icon to keep it proportional
-        resizeMode: 'contain', // Ensures the icon fits within the defined dimensions
+        height: 60,
+        width: 60,
+        tintColor: '#ffffff',
+        resizeMode: 'contain',
+        borderRadius: 20,
+        padding: 10,
+        alignItems: 'center',
+        marginHorizontal: 5,
+        marginVertical: 5,
+    },
+    selectedOption: {
+        backgroundColor: '#32a883',
+        borderRadius: 30,
+    },
+    iconLabel: {
+        color: '#ffffff',
+        fontSize: 12,
+        textAlign: 'center',
+        marginTop: 2,
+        marginBottom:5,
     },
 });
