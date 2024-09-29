@@ -1,5 +1,4 @@
 import {NavigationContainer} from '@react-navigation/native';
-import {createStackNavigator} from '@react-navigation/stack';
 import React from 'react';
 import ProtectedRoute from './src/components/ProtectedRoute';
 import {AuthProvider, useAuth} from './src/contexts/AuthContext';
