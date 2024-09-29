@@ -9,11 +9,7 @@ class Medication(me.EmbeddedDocument):
 
 
 class User(me.Document):
-<<<<<<< HEAD
     user_id = me.StringField(required=True)
-=======
-    uid = me.StringField(required=True)
->>>>>>> a203388 (query user by firebase uid)
     name = me.StringField(required=True)
     email = me.EmailField(required=True)
     age = me.IntField(required=True)
