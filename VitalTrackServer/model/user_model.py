@@ -1,4 +1,5 @@
 import mongoengine as me
+from model.entries_model import Entry
 
 
 class Medication(me.EmbeddedDocument):
@@ -11,6 +12,7 @@ class User(me.Document):
     name = me.StringField(required=True)
     email = me.EmailField(required=True)
     age = me.IntField(required=True)
+    entries = me.EmbeddedDocumentListField(Entry)
     medications = me.EmbeddedDocumentListField(Medication)
 
     meta = {
