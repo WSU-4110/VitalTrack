@@ -1,12 +1,13 @@
-import React from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
+import React from 'react';
+import ProtectedRoute from './src/components/ProtectedRoute';
 import {AuthProvider, useAuth} from './src/contexts/AuthContext';
+import EntriesScreen from './src/screens/Entries';
 import HomeScreen from './src/screens/Home';
 import LoginScreen from './src/screens/Login';
-import SignupScreen from './src/screens/Signup';
-import ProtectedRoute from './src/components/ProtectedRoute';
 import SettingsScreen from './src/screens/Settings';
+import SignupScreen from './src/screens/Signup';
 
 const Stack = createStackNavigator();
 
@@ -29,6 +30,7 @@ function AppNavigator() {
         )}
       </Stack.Screen>
       <Stack.Screen name="Settings" component={SettingsScreen} />
+      <Stack.Screen name="Entries" component={EntriesScreen} />
     </Stack.Navigator>
   );
 }
