@@ -21,8 +21,8 @@ function AppNavigator() {
 
   return (
     <Stack.Navigator initialRouteName={currentUser ? 'Home' : 'Signup'}>
-      <Stack.Screen name="Signup" component={SignupScreen} />
-      <Stack.Screen name="Login" component={LoginScreen} />
+      <Stack.Screen name="Signup" component={SignupScreen} options={{ headerShown: false }} />
+      <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }}/>
       <Stack.Screen name="Home">
         {() => (
           <ProtectedRoute>
@@ -30,8 +30,8 @@ function AppNavigator() {
           </ProtectedRoute>
         )}
       </Stack.Screen>
-      <Stack.Screen name="Settings" component={SettingsScreen} />
-      <Stack.Screen name="Entries" component={EntriesScreen} />
+      <Stack.Screen name="Settings" component={SettingsScreen} options={{ headerShown: false }} />
+      <Stack.Screen name="Entries" component={EntriesScreen} options={{ headerShown: false }}/>
        <Stack.Screen name="Calendar" component={CalendarScreen} options={{ headerShown: false }} />
     </Stack.Navigator>
   );
