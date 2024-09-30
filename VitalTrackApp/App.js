@@ -7,7 +7,7 @@ import HomeScreen from './src/screens/Home';
 import LoginScreen from './src/screens/Login';
 import SettingsScreen from './src/screens/Settings';
 import SignupScreen from './src/screens/Signup';
-import CalendarScreen from './src/screens/CalendarScreen';    
+import CalendarScreen from './src/screens/Calendar';    
 import {createStackNavigator} from '@react-navigation/stack';
 
 const Stack = createStackNavigator();
