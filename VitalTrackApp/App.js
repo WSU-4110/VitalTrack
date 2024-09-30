@@ -7,6 +7,7 @@ import HomeScreen from './src/screens/Home';
 import LoginScreen from './src/screens/Login';
 import SettingsScreen from './src/screens/Settings';
 import SignupScreen from './src/screens/Signup';
+import CalendarScreen from './src/screens/CalendarScreen';    
 import {createStackNavigator} from '@react-navigation/stack';
 
 const Stack = createStackNavigator();
@@ -31,6 +32,7 @@ function AppNavigator() {
       </Stack.Screen>
       <Stack.Screen name="Settings" component={SettingsScreen} />
       <Stack.Screen name="Entries" component={EntriesScreen} />
+       <Stack.Screen name="Calendar" component={CalendarScreen} options={{ headerShown: false }} />
     </Stack.Navigator>
   );
 }
