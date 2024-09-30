@@ -1,8 +1,4 @@
-
-import auth from '@react-native-firebase/auth';
-import {useState} from 'react';
-import {useNavigation} from '@react-navigation/native';
-import React from 'react';
+import React, {useState} from 'react';
 import {
   Alert,
   Image,
@@ -13,40 +9,52 @@ import {
   View,
 } from 'react-native';
 
+import auth from '@react-native-firebase/auth';
+import {CommonActions, useNavigation} from '@react-navigation/native';
+
+const baseUrl = 'http://10.0.2.2:5000';
 
 export default function SignupScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const navigation = useNavigation();
-  const baseUrl = 'http://10.0.2.2:5000';
 
   function handleSubmit() {
     createUser(email, password);
   }
 
   async function createUser(email, password) {
-    try {
-      const userCredential = await auth().createUserWithEmailAndPassword(
-        email,
-        password,
-      );
-      const uid = userCredential.user.uid;
+    if (email && password) {
+      try {
+        const userCredential = await auth().createUserWithEmailAndPassword(
+          email,
+          password,
+        );
+        const uid = userCredential.user.uid;
 
-      const response = await fetch(`${baseUrl}/createUser`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({uid, email}),
-      });
+        const response = await fetch(`${baseUrl}/createUser`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({uid, email}),
+        });
 
-      const data = await response.json();
-      console.log('User created in database:', data);
-
-      Alert.alert('User created successfully');
-      navigation.navigate('Home');
-    } catch (error) {
-      Alert.alert(error.code);
+        const data = await response.json();
+        console.log('User created in database:', data);
+        Alert.alert('User created successfully');
+        navigation.dispatch(
+          CommonActions.reset({
+            index: 0,
+            routes: [{name: 'Home'}],
+          }),
+        );
+      } catch (error) {
+        console.log(error);
+        Alert.alert(error.code);
+      }
+    } else {
+      Alert.alert('Please enter email and password');
     }
   }
 

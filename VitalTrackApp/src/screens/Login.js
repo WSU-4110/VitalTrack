@@ -2,6 +2,7 @@ import auth from '@react-native-firebase/auth';
 import {useNavigation} from '@react-navigation/native';
 import React, {useState} from 'react';
 import {
+  Alert,
   Image,
   StyleSheet,
   Text,
@@ -9,6 +10,8 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import {useAuth} from '../contexts/AuthContext';
+import {CommonActions} from '@react-navigation/native';
 
 export default function LoginScreen() {
   const [email, setEmail] = useState('');
@@ -20,21 +23,26 @@ export default function LoginScreen() {
   }
 
   async function loginUser(email, password) {
-    try {
-      const userCredential = await auth().signInWithEmailAndPassword(
-        email,
-        password,
-      );
-      const user = userCredential.user;
-      console.log('User signed in!', user);
-
-      if (navigation) {
-        navigation.navigate('Home');
-      } else {
-        console.log('Navigation object is undefined');
+    if (email && password) {
+      try {
+        await auth().signInWithEmailAndPassword(email, password);
+        if (navigation) {
+          Alert.alert('Successfully Signed In!');
+          navigation.dispatch(
+            CommonActions.reset({
+              index: 0,
+              routes: [{name: 'Home'}],
+            }),
+          );
+        } else {
+          console.log('Navigation object is undefined');
+        }
+      } catch (error) {
+        console.error('Error during sign in:', error.message);
+        Alert.alert(error.message);
       }
-    } catch (error) {
-      console.error('Error during sign in:', error.message);
+    } else {
+      Alert.alert('Please enter both email and password');
     }
   }
 

@@ -1,17 +1,15 @@
-import React from 'react';
+// jest.setup.js
 
-jest.mock('react-native-gesture-handler', () => {
-  return {
-    GestureHandlerRootView: props => <div {...props} />,
-    Swipeable: jest.fn(),
-    DrawerLayout: jest.fn(),
-    State: {},
-    PanGestureHandler: jest.fn(),
-    TouchableOpacity: jest.fn(),
-  };
-});
+import 'react-native-gesture-handler/jestSetup';
+
 jest.mock('@react-native-firebase/auth', () => ({
-  signInWithEmailAndPassword: jest.fn(() => Promise.resolve({})),
-  createUserWithEmailAndPassword: jest.fn(() => Promise.resolve({})),
-  signOut: jest.fn(() => Promise.resolve({})),
+  signInWithEmailAndPassword: jest.fn(() =>
+    Promise.resolve({user: {uid: '12345'}}),
+  ),
+  createUserWithEmailAndPassword: jest.fn(() =>
+    Promise.resolve({user: {uid: '12345'}}),
+  ),
+  signOut: jest.fn(() => Promise.resolve()),
+  onAuthStateChanged: jest.fn(() => Promise.resolve({user: {uid: '12345'}})),
+  currentUser: {uid: '12345'},
 }));
