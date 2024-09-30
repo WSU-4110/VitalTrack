@@ -11,6 +11,8 @@ def create_user():
     email = data.get("email")
     name = data.get("name", "")
     age = data.get("age", 20)
+
+
     entries = data.get("entries", [])
     medications = data.get("medications", [])
 

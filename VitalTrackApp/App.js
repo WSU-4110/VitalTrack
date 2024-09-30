@@ -5,6 +5,7 @@ import './gesture-handler';
 import HomeScreen from './src/screens/Home';
 import LoginScreen from './src/screens/Login';
 import SignupScreen from './src/screens/Signup';
+import EntriesScreen from './src/screens/Entries';
 
 export default function App() {
   const Stack = createStackNavigator();
@@ -14,6 +15,9 @@ export default function App() {
         <Stack.Screen name="Signup" component={SignupScreen} />
         <Stack.Screen name="Login" component={LoginScreen} />
         <Stack.Screen name="Home" component={HomeScreen} />
+
+        <Stack.Screen name="Entries" component={EntriesScreen} />
+
       </Stack.Navigator>
     </NavigationContainer>
   );
