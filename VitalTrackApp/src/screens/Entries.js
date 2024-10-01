@@ -74,7 +74,7 @@ export default function EntriesScreen() {
 
     const stressIcons = {
         'Low': require('../../assets/icons/stress/stress-low.png'),
-        'Moderate': require('../../assets/icons/stress/stress-medium.jpg'),
+        'Moderate': require('../../assets/icons/stress/stress-medium.png'),
         'High': require('../../assets/icons/stress/stress-high.png'),
     };
 
@@ -614,5 +614,8 @@ const styles = StyleSheet.create({
         justifyContent: 'center', // Centers vertically
         alignItems: 'center', // Centers horizontally
 
+    },
+    noEntriesText:{
+        color: '#ffffff',
     },
 });

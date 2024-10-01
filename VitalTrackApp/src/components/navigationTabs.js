@@ -4,26 +4,39 @@ import HomeScreen from '../screens/Home';
 import EntriesScreen from '../screens/Entries';
 import CalendarScreen from '../screens/Calendar';
 import AnalyticsScreen from '../screens/Analytics';
-import Icon from 'react-native-vector-icons/Ionicons';
+import { Image } from 'react-native';
 
 const Tab = createBottomTabNavigator();
+
+import homeIcon from '../../assets/icons/navigation/home-colored.png';
+import calendarIcon from '../../assets/icons/navigation/calendar.webp';
+import analyticsIcon from '../../assets/icons/navigation/analytics.png';
+import entriesIcon from '../../assets/icons/navigation/journal.png';
 
 export default function MyTabs() {
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
         tabBarIcon: ({ color, size }) => {
-          let iconName;
+          let iconSource;
+          
+          // Set the correct icon based on the route name
           if (route.name === 'Home') {
-            iconName = 'home-outline';
+            iconSource = homeIcon;
           } else if (route.name === 'Calendar') {
-            iconName = 'calendar-outline';
+            iconSource = calendarIcon;
           } else if (route.name === 'Analytics') {
-            iconName = 'bar-chart-outline';
+            iconSource = analyticsIcon;
           } else if (route.name === 'Entries') {
-            iconName = 'document-text-outline';
+            iconSource = entriesIcon;
           }
-          return <Icon name={iconName} size={size} color={color} />;
+
+          return (
+            <Image
+              source={iconSource}
+              style={{ width: size, height: size }}
+            />
+          );
         },
         tabBarActiveTintColor: '#007bff',
         tabBarInactiveTintColor: '#aaa',
