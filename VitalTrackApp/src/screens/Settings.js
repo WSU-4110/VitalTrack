@@ -1,4 +1,5 @@
-import React from 'react';
+
+
 import { View, Text, TouchableOpacity, Switch, StyleSheet } from 'react-native';
 import SignOutButton from '../components/SignoutButton';
 import HomeScreen from './Home';
