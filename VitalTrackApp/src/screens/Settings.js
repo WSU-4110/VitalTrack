@@ -1,16 +1,29 @@
-import React from 'react';
-import {View, Text, TouchableOpacity, Switch, StyleSheet} from 'react-native';
+
+
+import { View, Text, TouchableOpacity, Switch, StyleSheet } from 'react-native';
 import SignOutButton from '../components/SignoutButton';
+import HomeScreen from './Home';
+import { useNavigation } from '@react-navigation/native';
+import { Image } from 'react-native';
+import homeIcon from '../../assets/icons/navigation/Home.png';
 
 const settingsData = [
-  {id: 1, title: 'Profile'},
-  {id: 4, title: 'Help'},
+  { id: 1, title: 'Profile' },
+  { id: 4, title: 'Help' },
 ];
 
 const SettingsScreen = () => {
+  const navigation = useNavigation();
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Settings</Text>
+        <View style={styles.headerRow}>
+        <TouchableOpacity style={styles.backButton} onPress={() => navigation.navigate('Home')}>
+          <Image source={homeIcon} style={styles.iconStyle} />
+        </TouchableOpacity>
+        <Text style={styles.title}>Settings</Text>
+      </View>
+
+
 
       {settingsData.map(item => (
         <TouchableOpacity key={item.id} style={styles.settingItem}>
@@ -79,6 +92,29 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: 0.1,
     shadowRadius: 4,
+  },
+  backButton: {
+    borderRadius: 50, 
+    borderColor: 'darkgrey',
+    backgroundColor: 'grey',
+    padding: 10, 
+    width: 50, 
+    height: 50, 
+    justifyContent: 'center', 
+    alignItems: 'center',
+  },
+  backButtonText: {
+    color: '#cce5ff',
+    fontSize: 16,
+    fontWeight: 'bold',
+    justifyContent: 'center',
+    alignItems: 'center',
+    alignSelf: 'center',
+  },
+  iconStyle: {
+    width: 30,
+    height: 30,
+    tintColor: '#333',  // Optional: adjust color if needed
   },
 });
 

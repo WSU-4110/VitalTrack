@@ -13,6 +13,10 @@ export default function HomeScreen() {
   const navigation = useNavigation();
   return (
     <View style={styles.container}>
+           <Image
+        source={require('../../assets/images/VitalTrack-Logo.png')}
+        style={styles.logo}
+      />
       <TouchableOpacity
         style={styles.settingsButton}
         onPress={() => navigation.navigate('Settings')}>
@@ -27,13 +31,13 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#ffffff',
+    backgroundColor: '#2C2C2C',
     padding: 20,
   },
   title: {
     fontSize: 28,
     fontWeight: 'bold',
-    color: '#333',
+    color: '#ffffff',
     marginBottom: 20,
     textAlign: 'center',
   },
@@ -57,5 +61,13 @@ const styles = StyleSheet.create({
   settingsIcon: {
     fontSize: 24,
     color: '#333',
+  }, 
+  logo: {
+    height: 200,
+    aspectRatio: 1.5,
+    margin: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+    alignSelf: 'center',
   },
 });

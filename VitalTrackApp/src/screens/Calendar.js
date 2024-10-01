@@ -3,7 +3,7 @@ import { View, StatusBar, StyleSheet, Text } from 'react-native';
 import { Calendar } from 'react-native-calendars';
 import { useNavigation } from '@react-navigation/native';
 
-export default function Calendar() {
+export default function CalendarScreen() { 
   const [selectedDate, setSelectedDate] = useState('');
   const navigation = useNavigation();
 
