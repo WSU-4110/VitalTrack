@@ -45,7 +45,7 @@ export default function MyTabs() {
         },
       })}
     >
-      <Tab.Screen name="Home" component={HomeScreen} />
+      <Tab.Screen name="Home " component={HomeScreen} />
       <Tab.Screen name="Entries" component={EntriesScreen} />
       <Tab.Screen name="Calendar" component={CalendarScreen} />
       <Tab.Screen name="Analytics" component={AnalyticsScreen} />
