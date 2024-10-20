@@ -21,7 +21,7 @@ def log_entry():
             return jsonify({"success": False, "error": "Entry is required"}), 400
 
         entry = Entry(
-            # date=entry_data.get("date"),
+            date=entry_data.get("date"),
             well_being=entry_data.get("well_being"),
             sleep_quality=entry_data.get("sleep_quality"),
             mood=entry_data.get("mood"),
@@ -38,12 +38,8 @@ def log_entry():
         if user is None:
             return jsonify({"success": False, "error": "User not found"}), 404
 
-        print("ENTRIES: ",user.entries)
+     
         user.entries.append(entry)
-        print("ENTRIES: ",user.entries)
-        print("User JSON before saving:", user.to_json())  # Print User object details before saving
-
-        # mongo_db_facade.save(user)
 
       # Try validating and saving the user
         try:
