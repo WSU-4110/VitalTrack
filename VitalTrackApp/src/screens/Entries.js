@@ -50,24 +50,25 @@ export default function HealthModal() {
       mood: selectedMood,
       activity: selectedActivity,
       symptoms: selectedSymptom,
+      stress:selectedStress,
     };
   
     const userId = auth().currentUser ? auth().currentUser.uid : null; // Get the user ID from Firebase auth
-  
+    console.log("User ID:", userId);
+
     try {
-      const response = await axios.post('http://your-backend-url/logEntry', {
+      const response = await axios.post('http://10.0.2.2:5000/logEntry', {
         user_id: userId,
         entry: entryData,
       });
-  
+      console.log("Response:", response.data);
       if (response.data.success) {
         Alert.alert('Success', 'Entry logged successfully');
       } else {
         Alert.alert('Error', response.data.error);
       }
-  
-      setModalVisible(false); // Close the modal after submission
     } catch (error) {
+      console.log("Error:", error);  // Log any errors
       Alert.alert('Error', error.message);
     }
   };

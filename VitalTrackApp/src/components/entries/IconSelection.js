@@ -15,7 +15,10 @@ export default function IconSelection({ icons, selected, setSelected, title, mul
         {Object.entries(icons).map(([label, icon]) => (
           <TouchableOpacity
             key={label}
-            onPress={() => setSelected(label)} // Handles adding/removing selection
+            onPress={() => {
+              setSelected(label); // Set the selected value
+              console.log(title + ': ' + label); // Log the selection
+            }}
             style={[
               styles.iconButton,
               isSelected(selected, label) && styles.iconButtonSelected, // Apply selected style

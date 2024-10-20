@@ -1,53 +1,68 @@
-import React, { useState } from 'react';
-import IconSelection from './IconSelection'; // Import the reusable component
-import { activityIcons, symptomsIcons, sleepIcons } from './icons';
-import { View, Text } from 'react-native';
+import React from 'react';
+import { View } from 'react-native';
+import IconSelection from './IconSelection';  // Reusable IconSelection component
 
-export default function PhysicalHealthSelection() {
-  const [selectedActivities, setSelectedActivities] = useState([]); // Store multiple selected activities
-  const [selectedSymptoms, setSelectedSymptoms] = useState([]); // Store multiple selected symptoms
-  const [selectedSleepQuality, setSelectedSleepQuality] = useState(''); // Single selection for sleep quality
+// Import the icon objects (update the paths as needed)
+import { activityIcons, symptomsIcons, sleepIcons } from './icons'; 
 
-  // Toggle selection for activities (add/remove)
+export default function PhysicalHealthSelection({
+  selectedActivity,
+  setSelectedActivity,
+  selectedSymptom,
+  setSelectedSymptom,
+  selectedSleepQuality,
+  setSelectedSleepQuality,
+}) {
+
+  // Toggle logic for multiple activity selection
   const toggleActivity = (activity) => {
-    setSelectedActivities((prevSelected) =>
-      prevSelected.includes(activity)
-        ? prevSelected.filter((a) => a !== activity) // Remove if already selected
-        : [...prevSelected, activity] // Add if not selected
-    );
+    setSelectedActivity((prevSelected) => {
+      const newSelected = prevSelected.includes(activity)
+        ? prevSelected.filter((a) => a !== activity)
+        : [...prevSelected, activity];
+      console.log("Selected Activities:", newSelected);
+      return newSelected;
+    });
   };
 
-  // Toggle selection for symptoms (add/remove)
+  // Toggle logic for multiple symptom selection
   const toggleSymptom = (symptom) => {
-    setSelectedSymptoms((prevSelected) =>
-      prevSelected.includes(symptom)
-        ? prevSelected.filter((s) => s !== symptom) // Remove if already selected
-        : [...prevSelected, symptom] // Add if not selected
-    );
+    setSelectedSymptom((prevSelected) => {
+      const newSelected = prevSelected.includes(symptom)
+        ? prevSelected.filter((s) => s !== symptom)
+        : [...prevSelected, symptom];
+      console.log("Selected Symptoms:", newSelected);
+      return newSelected;
+    });
   };
 
   return (
     <View>
+      {/* Activity Selection */}
       <IconSelection
         icons={activityIcons}
-        selected={selectedActivities}
-        setSelected={toggleActivity} // Use toggle function for activities
-        title="What activity did you do today?"
-        multiple={true} // Indicate multiple selection
+        selected={selectedActivity}
+        setSelected={toggleActivity}  // Use toggle logic for multiple selections
+        title="Select Your Activity"
+        multiple={true}
       />
+
+      {/* Symptom Selection */}
       <IconSelection
         icons={symptomsIcons}
-        selected={selectedSymptoms}
-        setSelected={toggleSymptom} // Use toggle function for symptoms
-        title="Did you have any symptoms?"
-        multiple={true} // Indicate multiple selection
+        selected={selectedSymptom}
+        setSelected={toggleSymptom}  // Use toggle logic for multiple selections
+        title="Select Any Symptoms"
+        multiple={true}
       />
+
+      {/* Sleep Quality Selection */}
       <IconSelection
         icons={sleepIcons}
         selected={selectedSleepQuality}
-        setSelected={setSelectedSleepQuality} // Single selection for sleep quality
-        title="How was your sleep last night?"
-        multiple={false} // Single selection for sleep
+        setSelected={setSelectedSleepQuality}  // Direct setter for single selection
+        title="Select Sleep Quality"
+        multiple={false}
       />
     </View>
   );

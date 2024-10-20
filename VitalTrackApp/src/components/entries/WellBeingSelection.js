@@ -1,11 +1,9 @@
-import React, { useState } from 'react';
+import React from 'react';
 import IconSelection from './IconSelection'; // Import the reusable component
-import { wellBeingIcons } from './icons';
-import {View,Text} from 'react-native';
+import { wellBeingIcons } from './icons'; // Import your icons
+import { View, Text } from 'react-native';
 
-export default function WellBeingSelection() {
-  const [selectedWellBeing, setSelectedWellBeing] = useState('');
-
+export default function WellBeingSelection({ selectedWellBeing, setSelectedWellBeing }) {
   return (
     <View>
       <IconSelection
@@ -14,11 +12,7 @@ export default function WellBeingSelection() {
         setSelected={setSelectedWellBeing}
         title="How is your well-being today?"
       />
-      {selectedWellBeing && (
-        <Text style={{ marginTop: 20, fontSize: 16, fontWeight: 'bold', color: '#007AFF' }}>
-          Selected Well-being: {selectedWellBeing}
-        </Text>
-      )}
+  
     </View>
   );
 }

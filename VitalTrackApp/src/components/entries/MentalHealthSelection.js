@@ -1,13 +1,9 @@
-import React, { useState } from 'react';
+import React from 'react';
 import IconSelection from './IconSelection'; // Reuse the IconSelection component
 import { moodIcons, energyIcons, stressIcons } from './icons'; // Import mood, energy, and stress icons
-import {View,Text} from 'react-native';
+import { View } from 'react-native';
 
-export default function MentalHealthSelection() {
-  const [selectedMood, setSelectedMood] = useState('');
-  const [selectedEnergy, setSelectedEnergy] = useState('');
-  const [selectedStress, setSelectedStress] = useState('');
-
+export default function MentalHealthSelection({ selectedMood, setSelectedMood, selectedEnergy, setSelectedEnergy, selectedStress, setSelectedStress }) {
   return (
     <View>
       {/* Mood Selection */}
@@ -33,8 +29,6 @@ export default function MentalHealthSelection() {
         setSelected={setSelectedStress}
         title="How is your stress level today?"
       />
-
-
     </View>
   );
 }
