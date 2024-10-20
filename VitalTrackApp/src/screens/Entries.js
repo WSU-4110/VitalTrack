@@ -1,621 +1,257 @@
 import React, { useState } from 'react';
-import {
-    View,
-    Text,
-    StyleSheet,
-    TouchableOpacity,
-    Modal,
-    ScrollView,
-    FlatList,
-    Image,
-} from 'react-native';
+import { View, Text, TouchableOpacity, Modal, StyleSheet, ScrollView,Alert } from 'react-native';
+import PhysicalHealthSelection from '../components/entries/PhysicalHealthSelection';
+import MentalHealthSelection from '../components/entries/MentalHealthSelection';
+import WellBeingSelection from '../components/entries/WellBeingSelection';
+import axios from 'axios';
+import auth from '@react-native-firebase/auth'; 
 
-export default function EntriesScreen() {
-    const [modalVisible, setModalVisible] = useState(false);
-    const [wellbeingEntries, setWellbeingEntries] = useState([]);
-    const [symptomsEntries, setSymptomsEntries] = useState([]);
-    const [sleepEntries, setSleepEntries] = useState([]);
-    const [activityEntries, setActivityEntries] = useState([]);
-    const [moodEntries, setMoodEntries] = useState([]);
-    const [stressEntries, setStressEntries] = useState([]);
-    const [energyEntries, setEnergyEntries] = useState([]);
+export default function HealthModal() {
+  const [isModalVisible, setModalVisible] = useState(false);
+  const [currentStep, setCurrentStep] = useState('wellbeing'); // Track the current step/page
 
-    const [loggedEntries, setLoggedEntries] = useState([]); // Store all logged entries
-    const [currentStep, setCurrentStep] = useState('wellbeing');
-    const [selectedWellBeing, setSelectedWellBeing] = useState('');
-    const [selectedMood, setSelectedMood] = useState('');
-    const [selectedStress, setSelectedStress] = useState('');
-    const [selectedEnergy, setSelectedEnergy] = useState('');
+  // Well-being slide
+  const [selectedWellBeing, setSelectedWellBeing] = useState('');
 
-    const wellBeingIcons = {
-        'Very Poor': require('../../assets/icons/well-being/well-being-verypoor.png'),
-        'Poor': require('../../assets/icons/well-being/well-being-poor.png'),
-        'Okay': require('../../assets/icons/well-being/well-being-okay.png'),
-        'Good': require('../../assets/icons/well-being/well-being-good.png'),
-        'Great': require('../../assets/icons/well-being/well-being-great.png'),
+  // Physical health slide
+  const [selectedActivity, setSelectedActivity] = useState([]);
+  const [selectedSymptom, setSelectedSymptom] = useState([]);
+  const [selectedSleepQuality, setSelectedSleepQuality] = useState('');
+
+  // Mental health slide
+  const [selectedMood, setSelectedMood] = useState('');
+  const [selectedEnergy, setSelectedEnergy] = useState('');
+  const [selectedStress, setSelectedStress] = useState('');
+
+  // For forward navigation
+  const handleNextStep = () => {
+    if (currentStep === 'wellbeing') {
+      setCurrentStep('physical');
+    } else if (currentStep === 'physical') {
+      setCurrentStep('mental');
+    }
+  };
+
+  // For backward navigation
+  const handlePrevStep = () => {
+    if (currentStep === 'mental') {
+      setCurrentStep('physical');
+    } else if (currentStep === 'physical') {
+      setCurrentStep('wellbeing');
+    }
+  };
+
+  // Handle form submission
+  const handleSubmit = async () => {
+    const entryData = {
+      date: new Date().toISOString(),
+      well_being: selectedWellBeing,
+      sleep_quality: selectedSleepQuality,
+      mood: selectedMood,
+      activity: selectedActivity,
+      symptoms: selectedSymptom,
     };
+  
+    const userId = auth().currentUser ? auth().currentUser.uid : null; // Get the user ID from Firebase auth
+  
+    try {
+      const response = await axios.post('http://your-backend-url/logEntry', {
+        user_id: userId,
+        entry: entryData,
+      });
+  
+      if (response.data.success) {
+        Alert.alert('Success', 'Entry logged successfully');
+      } else {
+        Alert.alert('Error', response.data.error);
+      }
+  
+      setModalVisible(false); // Close the modal after submission
+    } catch (error) {
+      Alert.alert('Error', error.message);
+    }
+  };
+  
+  return (
+    <View style={styles.pageContainer}>
+      {/* Page Header */}
+      <View style={styles.header}>
+        <Text style={styles.headerText}>Entries</Text>
+      </View>
 
-    const symptomsIcons = {
-        'Sneeze': require('../../assets/icons/symptoms/symptoms-sneeze.png'),
-        'Nausea': require('../../assets/icons/symptoms/symptoms-nausea.png'),
-        'Headache': require('../../assets/icons/symptoms/symptoms-headache.png'),
-        'Fever': require('../../assets/icons/symptoms/symptoms-fever.png'),
-        'Fatigue': require('../../assets/icons/symptoms/symptoms-fatigue.png'),
-    };
+      {/* Log Entry Button */}
+      <View style={styles.logButtonContainer}>
+        <TouchableOpacity onPress={() => setModalVisible(true)} style={styles.logButton}>
+          <Text style={styles.logButtonText}>Log Entry</Text>
+        </TouchableOpacity>
+      </View>
 
-    const sleepIcons = {
-        'Bad': require('../../assets/icons/sleep/sleep-bad.png'),
-        'Moderate': require('../../assets/icons/sleep/sleep-moderate.png'),
-        'Good': require('../../assets/icons/sleep/sleep-good.png'),
-    };
+      {/* Modal */}
+      <Modal
+        visible={isModalVisible}
+        animationType="slide"
+        onRequestClose={() => setModalVisible(false)}
+      >
+        {/* Close button */}
+        <TouchableOpacity style={styles.closeButton} onPress={() => setModalVisible(false)}>
+          <Text style={styles.closeButtonText}>X</Text>
+        </TouchableOpacity>
 
-    const activityIcons = {
-        'Yoga': require('../../assets/icons/activity/activity-yoga.png'),
-        'Weights': require('../../assets/icons/activity/activity-weights.png'),
-        'Walk': require('../../assets/icons/activity/activity-walk.png'),
-        'Sport': require('../../assets/icons/activity/activity-sport.png'),
-        'HIT': require('../../assets/icons/activity/activity-HIT.png'),
-    };
+        {/* Scrollable content */}
+        <ScrollView contentContainerStyle={styles.scrollViewContent}>
+          <View style={styles.modalContainer}>
+            {currentStep === 'wellbeing' && (
+              <WellBeingSelection
+                selectedWellBeing={selectedWellBeing}
+                setSelectedWellBeing={setSelectedWellBeing}
+              />
+            )}
+            {currentStep === 'physical' && (
+              <PhysicalHealthSelection
+                selectedActivity={selectedActivity}
+                setSelectedActivity={setSelectedActivity}
+                selectedSymptom={selectedSymptom}
+                setSelectedSymptom={setSelectedSymptom}
+                selectedSleepQuality={selectedSleepQuality}
+                setSelectedSleepQuality={setSelectedSleepQuality}
+              />
+            )}
+            {currentStep === 'mental' && (
+              <MentalHealthSelection
+                selectedMood={selectedMood}
+                setSelectedMood={setSelectedMood}
+                selectedEnergy={selectedEnergy}
+                setSelectedEnergy={setSelectedEnergy}
+                selectedStress={selectedStress}
+                setSelectedStress={setSelectedStress}
+              />
+            )}
+          </View>
+        </ScrollView>
 
-    const moodIcons = {
-        'Very Bad': require('../../assets/icons/mood/mood-verybad.png'),
-        'Bad': require('../../assets/icons/mood/mood-bad.png'),
-        'Okay': require('../../assets/icons/mood/mood-okay.png'),
-        'Good': require('../../assets/icons/mood/mood-good.png'),
-        'Great': require('../../assets/icons/mood/mood-great.png'),
-    };
-
-    const energyIcons = {
-        'Very Low': require('../../assets/icons/energy/energy-verylow.png'),
-        'Low': require('../../assets/icons/energy/energy-low.png'),
-        'Moderate': require('../../assets/icons/energy/energy-moderate.webp'),
-        'High': require('../../assets/icons/energy/energy-high.webp'),
-    };
-
-    const stressIcons = {
-        'Low': require('../../assets/icons/stress/stress-low.png'),
-        'Moderate': require('../../assets/icons/stress/stress-medium.png'),
-        'High': require('../../assets/icons/stress/stress-high.png'),
-    };
-
-    const toggleButton = (group, selection, setGroup) => {
-        if (group.includes(selection)) {
-            setGroup(group.filter((e) => e !== selection));
-        } else {
-            setGroup([...group, selection]);
-        }
-    };
-
-    const handleWellBeingSelection = (selection) => {
-        toggleButton(wellbeingEntries, selection, setWellbeingEntries);
-        setSelectedWellBeing(selection);
-        setCurrentStep('details');
-    };
-
-    const handleNextToMood = () => {
-        setCurrentStep('mood'); // Move to the mood, energy, and stress step
-    };
-
-    const logEntry = () => {
-        const newEntry = {
-            id: Math.random().toString(),
-            wellBeing: selectedWellBeing,
-            symptoms: symptomsEntries,
-            sleep: sleepEntries,
-            activity: activityEntries,
-            mood: selectedMood,
-            stress: selectedStress,
-            energy: selectedEnergy,
-            date: new Date().toLocaleDateString(),
-        };
-
-        // When an entry is logged, reset all selections
-        setLoggedEntries([...loggedEntries, newEntry]);
-        setModalVisible(false);
-        setWellbeingEntries([]);
-        setSymptomsEntries([]);
-        setSleepEntries([]);
-        setActivityEntries([]);
-        setSelectedMood('');
-        setSelectedStress('');
-        setSelectedEnergy('');
-    };
-
-    return (
-        <View style={styles.container}>
-            <View style={styles.header}>
-                <Text style={styles.title}>Entries</Text>
-            </View>
-
-            {/* Display Logged Entries */}
-            {(() => {
-                if (loggedEntries.length === 0) {
-                    return <Text style={styles.noEntriesText}>No entries logged yet</Text>;
-                } else {
-                    return (
-                        <FlatList
-                            data={loggedEntries}
-                            keyExtractor={(item) => item.id}
-                            renderItem={({ item }) => (
-                                <View style={styles.entryCard}>
-                                    <View style={styles.entryContent}>
-                                        <View>
-                                            <Text style={styles.date}>{item.date}</Text>
-                                            <Text style={styles.summary}>Symptoms: {item.symptoms.join(', ')}</Text>
-                                            <Text style={styles.summary}>Sleep: {item.sleep.join(', ')}</Text>
-                                            <Text style={styles.summary}>Activity: {item.activity.join(', ')}</Text>
-                                            <Text style={styles.summary}>Mood: {item.mood}</Text>
-                                            <Text style={styles.summary}>Stress: {item.stress}</Text>
-                                            <Text style={styles.summary}>Energy: {item.energy}</Text>
-                                        </View>
-                                        <Image source={wellBeingIcons[item.wellBeing]} style={styles.wellBeingIcon} />
-                                    </View>
-                                </View>
-                            )}
-                        />
-                    );
-                }
-            })()}
-
-            <TouchableOpacity
-                style={styles.button}
-                onPress={() => {
-                    setModalVisible(true);
-                    setCurrentStep('wellbeing');
-                }}
-            >
-                <Text style={styles.buttonText}>Add Entry</Text>
+        {/* Navigation buttons */}
+        <View style={styles.buttonContainer}>
+          {currentStep !== 'wellbeing' && (
+            <TouchableOpacity style={styles.backButton} onPress={handlePrevStep}>
+              <Text style={styles.buttonText}>Back</Text>
             </TouchableOpacity>
+          )}
+          {currentStep !== 'mental' && (
+            <TouchableOpacity style={styles.nextButton} onPress={handleNextStep}>
+              <Text style={styles.buttonText}>Next</Text>
+            </TouchableOpacity>
+          )}
 
-            {/* Full-Screen Modal */}
-            <Modal
-                transparent={false}
-                animationType="slide"
-                visible={modalVisible}
-                onRequestClose={() => setModalVisible(false)}
-            >
-                <View style={styles.modalContainer}>
-                    <TouchableOpacity
-                        style={styles.closeButton}
-                        onPress={() => setModalVisible(false)}
-                    >
-                        <Text style={styles.closeButtonText}>X</Text>
-                    </TouchableOpacity>
-
-                    <View style={styles.modalContent}>
-                        {/* Step 1: Well-being Selection */}
-                        {currentStep === 'wellbeing' && (
-                            <>
-                                <View style={styles.wellbeing}>
-                                    <Text style={styles.modalTitle}>How is your well-being today?</Text>
-                                    <View style={styles.iconRow}>
-                                        {Object.keys(wellBeingIcons).map((wellBeing) => (
-                                            <TouchableOpacity
-                                                key={wellBeing}
-                                                style={[
-                                                    styles.moodOption,
-                                                    selectedWellBeing === wellBeing && styles.selectedOption,
-                                                ]}
-                                                onPress={() => handleWellBeingSelection(wellBeing)}
-                                            >
-                                                <Image
-                                                    source={wellBeingIcons[wellBeing]}
-                                                    style={[
-                                                        styles.icon,
-                                                        selectedWellBeing === wellBeing && { tintColor: 'black' }
-                                                    ]}
-                                                />
-                                                <Text style={[
-                                                    styles.iconLabel,
-                                                    selectedWellBeing === wellBeing && { color: 'black' }
-                                                ]}>
-                                                    {wellBeing}
-                                                </Text>
-                                            </TouchableOpacity>
-                                        ))}
-                                    </View>
-                                </View>
-
-                            </>
-                        )}
-
-                        {/* Step 2: Symptoms, Sleep, and Activity */}
-                        {currentStep === 'details' && (
-                            <>
-                                <TouchableOpacity
-                                    style={styles.backButton}
-                                    onPress={() => setCurrentStep('wellbeing')}
-                                >
-                                    <Text style={styles.backButtonText}>← Back</Text>
-                                </TouchableOpacity>
-                                <Text style={styles.modalTitle}>Select Symptoms, Sleep, and Activity</Text>
-                                <ScrollView style={styles.scrollView}>
-                                    {/* Symptoms Section */}
-                                    <View style={styles.groupContainer}>
-                                        <View style={styles.groupBorder}>
-                                            <Text style={styles.sectionTitle}>Symptoms</Text>
-                                            <View style={styles.iconRow}>
-                                                {Object.keys(symptomsIcons).map((symptom) => (
-                                                    <TouchableOpacity
-                                                        key={symptom}
-                                                        style={[
-                                                            styles.moodOption,
-                                                            symptomsEntries.includes(symptom) && styles.selectedOption,
-                                                        ]}
-                                                        onPress={() => toggleButton(symptomsEntries, symptom, setSymptomsEntries)}
-                                                    >
-                                                        <Image source={symptomsIcons[symptom]}
-                                                            style={[
-                                                                styles.icon,
-                                                                symptomsEntries.includes(symptom) && { tintColor: 'black' }
-                                                            ]}
-                                                        />
-                                                        <Text style={[
-                                                            styles.iconLabel,
-                                                            symptomsEntries.includes(symptom) && { color: 'black' }
-                                                        ]}>{symptom}</Text>
-                                                    </TouchableOpacity>
-                                                ))}
-                                            </View>
-                                        </View>
-                                    </View>
-
-                                    {/* Sleep Section */}
-                                    <View style={styles.groupContainer}>
-                                        <View style={styles.groupBorder}>
-                                            <Text style={styles.sectionTitle}>Sleep</Text>
-                                            <View style={styles.iconRow}>
-                                                {Object.keys(sleepIcons).map((sleep) => (
-                                                    <TouchableOpacity
-                                                        key={sleep}
-                                                        style={[
-                                                            styles.moodOption,
-                                                            sleepEntries.includes(sleep) && styles.selectedOption,
-                                                        ]}
-                                                        onPress={() => toggleButton(sleepEntries, sleep, setSleepEntries)}
-                                                    >
-                                                        <Image source={sleepIcons[sleep]}
-                                                            style={[
-                                                                styles.icon,
-                                                                sleepEntries.includes(sleep) && { tintColor: 'black' }
-                                                            ]}
-                                                        />
-                                                        <Text style={[
-                                                            styles.iconLabel,
-                                                            sleepEntries.includes(sleep) && { color: 'black' }
-                                                        ]}>{sleep}</Text>
-                                                    </TouchableOpacity>
-                                                ))}
-                                            </View>
-                                        </View>
-                                    </View>
-
-                                    {/* Activity Section */}
-                                    <View style={styles.groupContainer}>
-                                        <View style={styles.groupBorder}>
-                                            <Text style={styles.sectionTitle}>Activity</Text>
-                                            <View style={styles.iconRow}>
-                                                {Object.keys(activityIcons).map((activity) => (
-                                                    <TouchableOpacity
-                                                        key={activity}
-                                                        style={[
-                                                            styles.moodOption,
-                                                            activityEntries.includes(activity) && styles.selectedOption,
-                                                        ]}
-                                                        onPress={() => toggleButton(activityEntries, activity, setActivityEntries)}
-                                                    >
-                                                        <Image source={activityIcons[activity]}
-                                                            style={[
-                                                                styles.icon,
-                                                                activityEntries.includes(activity) && { tintColor: 'black' }
-                                                            ]}
-                                                        />
-                                                        <Text style={[
-                                                            styles.iconLabel,
-                                                            activityEntries.includes(activity) && { color: 'black' }
-                                                        ]}>{activity}</Text>
-                                                    </TouchableOpacity>
-                                                ))}
-                                            </View>
-                                        </View>
-                                    </View>
-
-                                    <TouchableOpacity
-                                        style={styles.logButton}
-                                        onPress={handleNextToMood} // Move to the mood step
-                                    >
-                                        <Text style={styles.logButtonText}>Next</Text>
-                                    </TouchableOpacity>
-                                </ScrollView>
-                            </>
-                        )}
-
-                        {/* Step 3: Mood, Energy, and Stress */}
-                        {currentStep === 'mood' && (
-                            <>
-                                <TouchableOpacity
-                                    style={styles.backButton}
-                                    onPress={() => setCurrentStep('details')}
-                                >
-                                    <Text style={styles.backButtonText}>← Back</Text>
-                                </TouchableOpacity>
-
-                                <Text style={styles.modalTitle}>Track your Mood, Energy, and Stress</Text>
-                                <ScrollView style={styles.scrollView}>
-
-                                    {/* Mood Section */}
-                                    <View style={styles.groupContainer}>
-                                        <View style={styles.groupBorder}>
-                                            <Text style={styles.sectionTitle}>Mood</Text>
-                                            <View style={styles.iconRow}>
-                                                {Object.keys(moodIcons).map((mood) => (
-                                                    <TouchableOpacity
-                                                        key={mood}
-                                                        style={[
-                                                            styles.moodOption,
-                                                            selectedMood === mood && styles.selectedOption,
-                                                        ]}
-                                                        onPress={() => setSelectedMood(mood)}
-                                                    >
-                                                        <Image source={moodIcons[mood]}
-                                                            style={[
-                                                                styles.icon,
-                                                                selectedMood === mood && { tintColor: 'black' }
-                                                            ]}
-                                                        />
-                                                        <Text style={[
-                                                            styles.iconLabel,
-                                                            selectedMood === mood && { color: 'black' }
-                                                        ]}>{mood}</Text>
-                                                    </TouchableOpacity>
-                                                ))}
-                                            </View>
-                                        </View>
-                                    </View>
-
-                                    {/* Energy Section */}
-                                    <View style={styles.groupContainer}>
-                                        <View style={styles.groupBorder}>
-                                            <Text style={styles.sectionTitle}>Energy</Text>
-                                            <View style={styles.iconRow}>
-                                                {Object.keys(energyIcons).map((energy) => (
-                                                    <TouchableOpacity
-                                                        key={energy}
-                                                        style={[
-                                                            styles.moodOption,
-                                                            selectedEnergy === energy && styles.selectedOption,
-                                                        ]}
-                                                        onPress={() => setSelectedEnergy(energy)}
-                                                    >
-                                                        <Image source={energyIcons[energy]}
-                                                            style={[
-                                                                styles.icon,
-                                                                selectedEnergy === energy && { tintColor: 'black' }
-                                                            ]}
-                                                        />
-                                                        <Text style={[
-                                                            styles.iconLabel,
-                                                            selectedEnergy === energy && { color: 'black' }
-                                                        ]}>{energy}</Text>
-                                                    </TouchableOpacity>
-                                                ))}
-                                            </View>
-                                        </View>
-                                    </View>
-
-                                    {/* Stress Section */}
-                                    <View style={styles.groupContainer}>
-                                        <View style={styles.groupBorder}>
-                                            <Text style={styles.sectionTitle}>Stress</Text>
-                                            <View style={styles.iconRow}>
-                                                {Object.keys(stressIcons).map((stress) => (
-                                                    <TouchableOpacity
-                                                        key={stress}
-                                                        style={[
-                                                            styles.moodOption,
-                                                            selectedStress === stress && styles.selectedOption,
-                                                        ]}
-                                                        onPress={() => setSelectedStress(stress)}
-                                                    >
-                                                        <Image source={stressIcons[stress]}
-                                                            style={[
-                                                                styles.icon,
-                                                                selectedStress === stress && { tintColor: 'black' }
-                                                            ]}
-                                                        />
-                                                        <Text style={[
-                                                            styles.iconLabel,
-                                                            selectedStress === stress && { color: 'black' }
-                                                        ]}>{stress}</Text>
-                                                    </TouchableOpacity>
-                                                ))}
-                                            </View>
-                                        </View>
-                                    </View>
-
-                                    {/* Log Entry Button (same position as the 'Next' button) */}
-                                    <TouchableOpacity
-                                        style={styles.logButton}
-                                        onPress={logEntry}  // Log the entry
-                                    >
-                                        <Text style={styles.logButtonText}>Log Entry</Text>
-                                    </TouchableOpacity>
-                                </ScrollView>
-                            </>
-                        )}
-                    </View>
-                </View>
-            </Modal>
+          {/* Submit button appears only on the last step */}
+          {currentStep === 'mental' && (
+            <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
+              <Text style={styles.buttonText}>Submit</Text>
+            </TouchableOpacity>
+          )}
         </View>
-    );
-}
+      </Modal>
+    </View>
+  );
+          }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#2C2C2C',
-        padding: 20,
-    },
-    header: {
-        backgroundColor: '#4c4c4c',
-        width: '90%',
-        height: 100,
-        justifyContent: 'center',
-        alignItems: 'center',
-        alignSelf: 'center',
-        top: 10,
-        borderRadius: 20,
-        padding: 10,
-        marginBottom: 20,
-    },
-    title: {
-        fontSize: 40,
-        fontWeight: 'bold',
-        color: '#7BB7E0',
-        textAlign: 'center',
-        marginBottom: 20,
-    },
-    button: {
-        backgroundColor: '#DE0F3F',
-        borderRadius: 5,
-        padding: 10,
-        alignItems: 'center',
-        marginTop: 20,
-    },
-    buttonText: {
-        color: '#ffffff',
-        fontWeight: 'bold',
-    },
-    modalContainer: {
-        flex: 1,
-        backgroundColor: '#000000',
-        justifyContent: 'flex-start',
-    },
-    closeButton: {
-        position: 'absolute',
-        top: 30,
-        right: 20,
-        zIndex: 1,
-    },
-    closeButtonText: {
-        fontSize: 24,
-        color: '#ffffff',
-    },
-    modalContent: {
-        padding: 35,
-        alignItems: 'center',
-        maxHeight: '100%',
-        width: '100%',
-    },
-    scrollView: {
-        width: '100%',
-    },
-    modalTitle: {
-        color: '#7BB7E0',
-        fontSize: 24,
-        marginBottom: 15,
-    },
-    backButton: {
-        alignSelf: 'flex-start',
-        marginBottom: 15,
-    },
-    backButtonText: {
-        color: '#ffffff',
-        fontSize: 18,
-    },
-    sectionTitle: {
-        color: '#ffffff',
-        fontSize: 20,
-        marginBottom: 10,
-        textAlign: 'center',
-    },
-    groupContainer: {
-        marginBottom: 20,
-    },
-    groupBorder: {
-        borderColor: '#4c4c4c',
-        backgroundColor: '#4c4c4c',
-        borderWidth: 2,
-        borderRadius: 10,
-        padding: 15,
-    },
-    iconRow: {
-        flexDirection: 'row',
-        // justifyContent: 'flex-start',
-        alignItems: 'center',
-        marginVertical: 10,
-        flexWrap: 'wrap',
-        gap: 8,
-        justifyContent: 'center', // Center horizontally within the row
-        alignItems: 'center', // Align items in the row vertically
-    },
-    icon: {
-        height: 60,
-        width: 60,
-        tintColor: '#ffffff',
-        resizeMode: 'contain',
-        borderRadius: 20,
-        padding: 10,
-        alignItems: 'center',
-        marginHorizontal: 5,
-        marginVertical: 5,
-    },
-    selectedOption: {
-        backgroundColor: '#7bb7e0',
-        borderRadius: 30,
-    },
-    iconLabel: {
-        color: '#ffffff',
-        fontSize: 12,
-        textAlign: 'center',
-        marginTop: 2,
-        marginBottom: 5,
-    },
-    logButton: {
-        backgroundColor: '#de0f3f',
-        borderRadius: 5,
-        padding: 15,
-        alignItems: 'center',
-        marginTop: 20,
-    },
-    logButtonText: {
-        color: '#ffffff',
-        fontWeight: 'bold',
-    },
-    entryCard: {
-        backgroundColor: '#4c4c4c',
-        borderRadius: 10,
-        padding: 10,
-        marginBottom: 10,
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-    },
-    entryContent: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-    },
-    summary: {
-        color: '#ffffff',
-        fontSize: 14,
-    },
-    date: {
-        color: '#ffffff',
-        fontWeight: 'bold',
-        marginBottom: 5,
-    },
-    wellBeingIcon: {
-        height: 50,
-        width: 50,
-        resizeMode: 'contain',
-        tintColor: '#ffffff',
-    },
-    wellbeing: {
-        justifyContent: 'center', // Centers vertically
-        alignItems: 'center', // Centers horizontally
-
-    },
-    noEntriesText:{
-        color: '#ffffff',
-    },
+  pageContainer: {
+    flex: 1,
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+    backgroundColor: '#2C2C2C',
+  },
+  header: {
+    width: '100%',
+    padding: 20,
+    backgroundColor: '#7bb7e0', // Theme color for the header
+    alignItems: 'center',
+  },
+  headerText: {
+    fontSize: 24,
+    color: 'white',
+    fontWeight: 'bold',
+  },
+  logButtonContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  logButton: {
+    backgroundColor: '#de0f3f',
+    paddingVertical: 15,
+    paddingHorizontal: 40,
+    borderRadius: 10,
+  },
+  logButtonText: {
+    color: 'white',
+    fontWeight: 'bold',
+    fontSize: 16,
+  },
+  scrollViewContent: {
+    flexGrow: 1,
+  },
+  modalContainer: {
+    padding: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#403f3f',
+    flex: 1,
+  },
+  closeButton: {
+    position: 'absolute',
+    top: 10,
+    right: 10,
+    backgroundColor: '#de0f3f',
+    borderRadius: 20,
+    padding: 10,
+    zIndex: 10,
+    width: 40,
+    height: 40,
+    alignItems: 'center',
+    borderWidth: 2,
+    borderColor: '#940e2d',
+  },
+  closeButtonText: {
+    color: 'white',
+    fontWeight: 'bold',
+    fontSize: 16,
+    textAlignVertical: 'center',
+    textAlign: 'center',
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    position: 'absolute',
+    bottom: 10,
+  },
+  nextButton: {
+    backgroundColor: '#7bb7e0',
+    padding: 10,
+    borderRadius: 10,
+    alignItems: 'center',
+    width: 100,
+  },
+  backButton: {
+    backgroundColor: '#7bb7e0',
+    padding: 10,
+    borderRadius: 10,
+    alignItems: 'center',
+    width: 100,
+  },
+  submitButton: {
+    backgroundColor: '#de0f3f',
+    padding: 10,
+    borderRadius: 10,
+    alignItems: 'center',
+    width: 100,
+  },
+  buttonText: {
+    color: 'white',
+    fontWeight: 'bold',
+    fontSize: 16,
+  },
 });
