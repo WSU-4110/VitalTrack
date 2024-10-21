@@ -1,26 +1,60 @@
-import React, { useState } from 'react';
-import { View, StatusBar, StyleSheet, Text } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { ActivityIndicator, View, StatusBar, StyleSheet, Text, FlatList } from 'react-native';
 import { Calendar } from 'react-native-calendars';
-import { useNavigation } from '@react-navigation/native';
+import { useAuth } from '../contexts/AuthContext';
 
-export default function CalendarScreen() { 
+export default function CalendarScreen() {
+  const { currentUser, loading: authLoading } = useAuth();
   const [selectedDate, setSelectedDate] = useState('');
-  const navigation = useNavigation();
+  const [loggedEntries, setLoggedEntries] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const markedDates = {
-    '2024-09-30': { customStyles: { container: { backgroundColor: 'green' }, text: { color: 'white' } } },
-    '2024-09-28': { customStyles: { container: { backgroundColor: 'red' }, text: { color: 'white' } } },
-    '2024-09-27': { customStyles: { container: { backgroundColor: 'yellow' }, text: { color: 'black' } } },
-    ...(selectedDate && {
-      [selectedDate]: { selected: true, selectedColor: '#DE0F3F', textColor: '#FFFFFF' },
-    }),
+  useEffect(() => {
+  const fetchEntries = async () => {
+    if (currentUser) {
+      try {
+        const userId = currentUser.uid;
+        const response = await fetch(`http://10.0.2.2:5000/getEntries/${userId}`, {
+          method: 'GET',
+        });
+        const result = await response.json();
+        console.log('API Response:', result); 
+        if (result.success) {
+          setLoggedEntries(result.entries);
+          console.log('Logged Entries:', result.entries); 
+        } else {
+          console.error('Error fetching entries:', result.error);
+        }
+      } catch (error) {
+        console.error('Error fetching entries:', error);
+      } finally {
+        setLoading(false);
+      }
+    }
   };
+  fetchEntries();
+}, [currentUser]);
+
+
+
+  const markedDates = loggedEntries.reduce((acc, entry) => {
+    const moodColor = entry.mood === 'Good' ? 'green' : entry.mood === 'Okay' ? 'yellow' : 'red';
+    acc[entry.date] = {
+      customStyles: { container: { backgroundColor: moodColor }, text: { color: 'white' } },
+    };
+    return acc;
+  }, {});
+
+  const filteredEntries = loggedEntries.filter((entry) => entry.date === selectedDate);
+
+  if (authLoading || loading) {
+    return <ActivityIndicator size="large" color="#7BB7E0" />;
+  }
 
   return (
     <View style={styles.container}>
       <StatusBar barStyle="light-content" />
-      
-      
+
       <View style={styles.titleContainer}>
         <Text style={styles.titleText}>Calendar</Text>
       </View>
@@ -29,7 +63,6 @@ export default function CalendarScreen() {
         <Calendar
           onDayPress={(day) => {
             setSelectedDate(day.dateString);
-            navigation.navigate('Entries', { date: day.dateString });
           }}
           markedDates={markedDates}
           markingType={'custom'}
@@ -48,7 +81,7 @@ export default function CalendarScreen() {
             textDayFontWeight: '300',
             textMonthFontWeight: 'bold',
             textDayHeaderFontWeight: '500',
-            textDayFontSize: 16,
+            textDayFontSize: 16, 
             textMonthFontSize: 16,
             textDayHeaderFontSize: 14,
           }}
@@ -59,7 +92,32 @@ export default function CalendarScreen() {
         />
       </View>
 
-      
+      {/* Display the entry for the selected date */}
+      <View style={styles.entriesContainer}>
+        {selectedDate && filteredEntries.length > 0 ? (
+          <>
+            <Text style={styles.selectedDateText}>Entries for {selectedDate}:</Text>
+            <FlatList
+              data={filteredEntries}
+              keyExtractor={(item) => item.id}
+              renderItem={({ item }) => (
+                <View style={styles.entryCard}>
+                  <Text style={styles.entryTitle}>Well-being: {item.well_being}</Text>
+                  <Text style={styles.summary}>Symptoms: {item.symptoms.join(', ')}</Text>
+                  <Text style={styles.summary}>Sleep: {item.sleep_quality}</Text>
+                  <Text style={styles.summary}>Activity: {item.activity}</Text>
+                  <Text style={styles.summary}>Mood: {item.mood}</Text>
+                </View>
+              )}
+            />
+          </>
+        ) : (
+          <Text style={styles.noEntriesText}>
+            {selectedDate ? 'No entries for this date.' : 'Select a date to view entries.'}
+          </Text>
+        )}
+      </View>
+
       <View style={styles.legendContainer}>
         <View style={styles.legendItem}>
           <View style={[styles.legendColorBox, { backgroundColor: 'green' }]} />
@@ -90,21 +148,53 @@ const styles = StyleSheet.create({
   },
   titleText: {
     color: '#FFFFFF',
-    fontSize: 20,
+    fontSize: 20,  
     fontWeight: 'bold',
   },
   calendarContainer: {
-    flex: 1,
+    flex: 2,  
+    paddingBottom: 10,
   },
   calendar: {
     width: '100%',
-    height: '100%',
-    backgroundColor: '#2C2C2C',
+    padding: 5,
+  },
+  entriesContainer: {
+    flex: 1.3,
+    paddingHorizontal: 15, 
+    paddingBottom: 10, 
+  },
+  selectedDateText: {
+    fontSize: 16,  
+    color: '#7BB7E0',
+    marginBottom: 5,
+  },
+  entryCard: {
+    backgroundColor: '#4C4C4C',
+    borderRadius: 12, 
+    padding: 10,
+    marginBottom: 8, 
+    elevation: 3,
+  },
+  entryTitle: {
+    color: '#FFFFFF',
+    fontSize: 15, 
+    fontWeight: 'bold',
+    marginBottom: 5,
+  },
+  summary: {
+    color: '#CCCCCC',
+    fontSize: 13, 
+    marginBottom: 3,
+  },
+  noEntriesText: {
+    color: '#FFFFFF',
+    textAlign: 'center',
+    fontSize: 15, 
   },
   legendContainer: {
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    backgroundColor: '#2C2C2C',
+    paddingVertical: 8, 
+    paddingHorizontal: 15, 
   },
   legendItem: {
     flexDirection: 'row',
@@ -112,12 +202,12 @@ const styles = StyleSheet.create({
     marginVertical: 5,
   },
   legendColorBox: {
-    width: 20,
-    height: 20,
-    marginRight: 10,
+    width: 15,  
+    height: 15, 
+    marginRight: 8,
   },
   legendText: {
     color: '#FFFFFF',
-    fontSize: 14,
+    fontSize: 13, 
   },
 });
