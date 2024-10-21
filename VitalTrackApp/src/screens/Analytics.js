@@ -1,8 +1,36 @@
-import React from 'react';
-import {View, Text, ScrollView, StyleSheet, Image} from 'react-native';
-import MoodGraph from '../components/MoodGraph'
+import React, { useState, useEffect } from 'react';
+import {View, Text, ScrollView, StyleSheet, Alert} from 'react-native';
+import MoodGraph from '../components/MoodGraph';
+import axios from 'axios';
+import auth from '@react-native-firebase/auth';
+
 
 export default function AnalyticsScreen() {
+  const [tips, setTips] = useState(null);
+  const userId = auth().currentUser ? auth().currentUser.uid : null;
+
+  // Use useEffect to fetch tips when the component mounts
+  useEffect(() => {
+    const fetchTips = async () => {
+      if (!userId) return;
+
+      try {
+        const response = await axios.get('http://10.0.2.2:5000/tips/${userId}');
+        if (response.data) {
+          setTips(response.data);
+        } else {
+          Alert.alert('Error', 'No tips found');
+        }
+      } catch (error) {
+        console.log("Error fetching tips:", error);
+        Alert.alert('Error', error.message);
+      }
+    };
+
+    fetchTips();
+  }, [userId]);
+
+
   return(
     <ScrollView>
       <View style={styles.container}>
@@ -11,7 +39,7 @@ export default function AnalyticsScreen() {
 
         <View style={styles.section}>
             <Text style={styles.title}>Insights</Text>
-            <Text style={styles.subtitle}>You felt [less stressed] when you [did yoga] this week.</Text>
+            <Text style={styles.subtitle}>{tips.message}</Text>
         </View>
 
         <View style={styles.section}>
@@ -25,6 +53,8 @@ export default function AnalyticsScreen() {
             <Text style={styles.title}>Physical Health</Text>
             <Text style={styles.subtitle}>This month, you were less likely to [have headaches] when you
              [slept well].</Text>
+
+
          </View>
       </View>
     </ScrollView>

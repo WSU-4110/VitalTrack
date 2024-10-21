@@ -23,7 +23,7 @@ export default function MoodGraph(){
 
           // Extract mood data from the last 7 entries
           const moods = fetchedEntries.slice().reverse().slice(0, 7).map(entry => entry.mood);
-          setMoodData(moods); // Set mood data for the chart
+          setMoodData(moods);
         } else {
           Alert.alert('Error', response.data.error);
         }
@@ -37,10 +37,10 @@ export default function MoodGraph(){
   }, []);
 
      const data = {
-       labels: ["1","2","3","4","5","6","7"], // Just numbers 1 to 7 for now
+       labels: ["1","2","3","4","5","6","7"], // just 1 to 7 for now
        datasets: [
          {
-           data: moodData.length > 0 ? moodData : [0, 0, 0, 0, 0, 0, 0], // Use mood data or placeholder
+           data: moodData.length > 0 ? moodData : [0, 0, 0, 0, 0, 0, 0],
          }
        ]
      };
