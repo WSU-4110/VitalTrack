@@ -3,6 +3,7 @@
 from flask import Blueprint, jsonify, request
 from remotecalls.mongodb_facade import mongo_db_facade
 from model.entries_model import Entry
+from dateutil import parser
 
 log_entry_blueprint = Blueprint("logEntry", __name__)
 
