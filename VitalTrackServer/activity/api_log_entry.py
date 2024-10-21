@@ -20,8 +20,9 @@ def log_entry():
         if not entry_data:
             return jsonify({"success": False, "error": "Entry is required"}), 400
 
+        entry_date = parser.isoparse(entry_data.get("date"))
         entry = Entry(
-            date=entry_data.get("date"),
+            date=entry_date,
             well_being=entry_data.get("well_being"),
             sleep_quality=entry_data.get("sleep_quality"),
             mood=entry_data.get("mood"),
@@ -46,7 +47,7 @@ def log_entry():
             user.validate()  # Ensure all fields are valid before saving
             mongo_db_facade.save(user)
             print("User saved successfully.")
-        except ValidationError as ve:
+        except Exception as ve:
             print(f"Validation error: {ve}")
             return jsonify({"success": False, "error": f"Validation error: {ve}"}), 500
 
