@@ -1,5 +1,6 @@
 import React from 'react';
 import {View, Text, ScrollView, StyleSheet, Image} from 'react-native';
+import MoodGraph from '../components/MoodGraph'
 
 export default function AnalyticsScreen() {
   return(
@@ -16,11 +17,9 @@ export default function AnalyticsScreen() {
         <View style={styles.section}>
             <Text style={styles.title}>Mental Health</Text>
             <Text style={styles.caption}>Your mood this week</Text>
-            <Image
-                source={require('../../assets/images/moodgraph-example.png')}
-                style={styles.graph}
-            />
+            <MoodGraph />
         </View>
+
 
         <View style={styles.section}>
             <Text style={styles.title}>Physical Health</Text>
