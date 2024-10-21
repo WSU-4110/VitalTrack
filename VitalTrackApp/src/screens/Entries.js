@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, Modal, StyleSheet, ScrollView,Alert } from 'react-native';
+import { View, Text, TouchableOpacity, Modal, StyleSheet, ScrollView, Alert } from 'react-native';
 import PhysicalHealthSelection from '../components/entries/PhysicalHealthSelection';
 import MentalHealthSelection from '../components/entries/MentalHealthSelection';
 import WellBeingSelection from '../components/entries/WellBeingSelection';
 import axios from 'axios';
-import auth from '@react-native-firebase/auth'; 
-
+import auth from '@react-native-firebase/auth';
+import EntrySummary from '../components/entries/EntrySummary';
 export default function HealthModal() {
   const [isModalVisible, setModalVisible] = useState(false);
   const [currentStep, setCurrentStep] = useState('wellbeing'); // Track the current step/page
@@ -35,7 +35,7 @@ export default function HealthModal() {
   // For backward navigation
   const handlePrevStep = () => {
     if (currentStep === 'mental') {
-      setCurrentStep('physical');
+      setCurrentStep('phxysical');
     } else if (currentStep === 'physical') {
       setCurrentStep('wellbeing');
     }
@@ -50,9 +50,11 @@ export default function HealthModal() {
       mood: selectedMood,
       activity: selectedActivity,
       symptoms: selectedSymptom,
-      stress:selectedStress,
+      stress: selectedStress,
     };
-  
+
+    setModalVisible(false);
+
     const userId = auth().currentUser ? auth().currentUser.uid : null; // Get the user ID from Firebase auth
     console.log("User ID:", userId);
 
@@ -63,6 +65,17 @@ export default function HealthModal() {
       });
       console.log("Response:", response.data);
       if (response.data.success) {
+        //reset use states
+
+        setSelectedWellBeing('');  
+        setSelectedActivity([]); 
+        setSelectedSymptom([]);     
+        setSelectedSleepQuality('');     
+        setSelectedMood('');    
+        setSelectedEnergy('');   
+        setSelectedStress('');
+        setCurrentStep('wellbeing');
+
         Alert.alert('Success', 'Entry logged successfully');
       } else {
         Alert.alert('Error', response.data.error);
@@ -72,14 +85,14 @@ export default function HealthModal() {
       Alert.alert('Error', error.message);
     }
   };
-  
+
   return (
     <View style={styles.pageContainer}>
       {/* Page Header */}
       <View style={styles.header}>
         <Text style={styles.headerText}>Entries</Text>
       </View>
-
+      <EntrySummary />
       {/* Log Entry Button */}
       <View style={styles.logButtonContainer}>
         <TouchableOpacity onPress={() => setModalVisible(true)} style={styles.logButton}>
@@ -153,7 +166,7 @@ export default function HealthModal() {
       </Modal>
     </View>
   );
-          }
+}
 
 const styles = StyleSheet.create({
   pageContainer: {
@@ -211,7 +224,7 @@ const styles = StyleSheet.create({
     height: 40,
     alignItems: 'center',
     borderWidth: 2,
-    borderColor: '#940e2d',
+    borderColor: 'black',
   },
   closeButtonText: {
     color: 'white',
