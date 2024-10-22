@@ -11,7 +11,6 @@ import SignupScreen from './src/screens/Signup';
 import AnalyticsScreen from './src/screens/Analytics';
 import CalendarScreen from './src/screens/Calendar';
 import MyTabs from './src/components/navigationTabs';  // Import MyTabs
-
 const Stack = createStackNavigator();
 
 function AppNavigator() {
