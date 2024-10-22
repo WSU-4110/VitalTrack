@@ -9,7 +9,6 @@ export default function AnalyticsScreen() {
   const [tips, setTips] = useState(null);
   const userId = auth().currentUser ? auth().currentUser.uid : null;
 
-  // Use useEffect to fetch tips when the component mounts
   useEffect(() => {
     const fetchTips = async () => {
       if (!userId) return;
@@ -34,12 +33,14 @@ export default function AnalyticsScreen() {
   return(
     <ScrollView>
       <View style={styles.container}>
-        <Text style={styles.title}>Analytics Page</Text>
+        <View style={styles.header}>
+            <Text style={styles.headerText}>Analytics</Text>
+          </View>
         <Text style={styles.subtitle}>An overview of your wellbeing</Text>
 
         <View style={styles.section}>
             <Text style={styles.title}>Insights</Text>
-            <Text style={styles.subtitle}>{tips.message}</Text>
+            <Text style={styles.caption}>{tips ? tips.message : "Loading tips..."}</Text>
         </View>
 
         <View style={styles.section}>
@@ -51,7 +52,7 @@ export default function AnalyticsScreen() {
 
         <View style={styles.section}>
             <Text style={styles.title}>Physical Health</Text>
-            <Text style={styles.subtitle}>This month, you were less likely to [have headaches] when you
+            <Text style={styles.caption}>This month, you were less likely to [have headaches] when you
              [slept well].</Text>
 
 
@@ -65,27 +66,38 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
-    paddingVertical: 50,
-    backgroundColor: '#2C2C2C',
+    paddingVertical: 40,
+    backgroundColor: '#b3b5b4',
   },
+   header: {
+     width: '100%',
+     padding: 20,
+     backgroundColor: '#7bb7e0',
+     alignItems: 'center',
+   },
+   headerText: {
+     fontSize: 34,
+     color: 'white',
+     fontWeight: 'bold',
+   },
   title: {
-    fontSize: 34,
+    fontSize: 24,
     fontWeight: 'bold',
-    color: '#1E90FF',
+    color: '#7bb7e0',
     marginTop: 10,
     marginBottom: 10,
   },
   subtitle: {
-    fontSize: 18,
-    color: '#D3D3D3',
+    fontSize: 20,
+    color: '#333',
     marginBottom: 10,
     marginLeft: 10,
     marginRight: 2,
   },
   caption: {
-    fontSize: 20,
-    color: '#72baff',
-    marginBottom: 10,
+    fontSize: 17,
+    color: '#b3b5b4',
+    marginBottom: 8,
   },
   graph: {
       height: 200,

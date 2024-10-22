@@ -84,7 +84,7 @@ const chartConfig ={
 const styles = StyleSheet.create({
   subtitle: {
     fontSize: 18,
-    color: '#D3D3D3',
+    color: '#ff3b44',
     marginBottom: 10,
     marginLeft: 10,
     marginRight: 2,
