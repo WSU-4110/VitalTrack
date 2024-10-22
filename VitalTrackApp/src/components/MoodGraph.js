@@ -29,6 +29,9 @@ export default function MoodGraph(){
         }
       } catch (error) {
         console.log("Error fetching entries:", error);
+        console.log("Response data:", error.response.data);
+        console.log("Response status:", error.response.status);
+        console.log("Response headers:", error.response.headers);
         Alert.alert('Error', error.message);
       }
     };
@@ -47,10 +50,9 @@ export default function MoodGraph(){
 
     return(
         <View>
-         {moodData.length > 0 ? (
           <LineChart
             data={data}
-            width={Dimensions.get("window").width-60} // from react-native
+            width={Dimensions.get("window").width - 60} // from react-native
             height={220}
             yAxisLabel=""
             yAxisInterval={1} // optional, defaults to 1
@@ -61,10 +63,11 @@ export default function MoodGraph(){
               borderRadius: 16
             }}
           />
-        ) : (
-           <Text style={styles.subtitle}>Log entries to see graph</Text> // Show a message if no data
-        )}
-      </View>
+            {moodData.length === 0 && (
+              <Text style={styles.subtitle}>Log entries to see graph</Text>
+            )}
+        </View>
+
     )
 }
 

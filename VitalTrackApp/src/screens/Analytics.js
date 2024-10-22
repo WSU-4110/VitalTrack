@@ -14,7 +14,7 @@ export default function AnalyticsScreen() {
       if (!userId) return;
 
       try {
-        const response = await axios.get('http://10.0.2.2:5000/tips/${userId}');
+        const response = await axios.get(`http://10.0.2.2:5000/tips/${userId}`);
         if (response.data) {
           setTips(response.data);
         } else {
