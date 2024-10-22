@@ -47,6 +47,7 @@ export default function MoodGraph(){
 
     return(
         <View>
+         {moodData.length > 0 ? (
           <LineChart
             data={data}
             width={Dimensions.get("window").width-60} // from react-native
@@ -60,7 +61,10 @@ export default function MoodGraph(){
               borderRadius: 16
             }}
           />
-        </View>
+        ) : (
+           <Text style={styles.subtitle}>Log entries to see graph</Text> // Show a message if no data
+        )}
+      </View>
     )
 }
 
@@ -77,4 +81,12 @@ const chartConfig ={
     propsForDots: { r: "6", strokeWidth: "2", stroke: "#092b4d"}
 }
 
-
+const styles = StyleSheet.create({
+  subtitle: {
+    fontSize: 18,
+    color: '#D3D3D3',
+    marginBottom: 10,
+    marginLeft: 10,
+    marginRight: 2,
+    }
+});
