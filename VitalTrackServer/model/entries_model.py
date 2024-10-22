@@ -4,11 +4,13 @@ import datetime
 class Entry(me.EmbeddedDocument):
     date = me.DateField(default=datetime.date.today)
     well_being = me.StringField(required=True)
-    sleep_quality = me.StringField(required=False)  
+    sleep_quality = me.StringField(required=True)  
     mood = me.StringField(required=True)
     stress= me.StringField(required=True)
     activity = me.ListField(me.StringField(), required=False)  
     symptoms = me.ListField(me.StringField(), required=False)
+    classification = me.StringField(required=True)  
+
     def to_dict(self):
         return {
             "date": str(self.date),
@@ -17,6 +19,7 @@ class Entry(me.EmbeddedDocument):
             "mood": self.mood,
             "stress": self.stress,
             "activity": self.activity,
-            "symptoms": self.symptoms
+            "symptoms": self.symptoms,
+            "classification": self.classification
         }
 
