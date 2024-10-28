@@ -1,15 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, Alert } from 'react-native';
-import {LineChart, BarChart, PieChart, ProgressChart, ContributionGraph, StackedBarChart } from "react-native-chart-kit";
+import {LineChart} from "react-native-chart-kit";
+import { Dimensions } from "react-native";
 import axios from 'axios';
 import auth from '@react-native-firebase/auth';
-import { Dimensions } from "react-native";
 
-export default function MoodGraph(){
-  const [entries, setEntries] = useState([]);
+export default function MoodGraph() {
   const [moodData, setMoodData] = useState([]);
 
-  // Fetch entries for the logged-in user
   useEffect(() => {
     const fetchEntries = async () => {
       const userId = auth().currentUser ? auth().currentUser.uid : null; // Get the user ID from Firebase
@@ -19,19 +17,17 @@ export default function MoodGraph(){
         const response = await axios.get(`http://10.0.2.2:5000/getEntries/${userId}`);
         if (response.data.success) {
           const fetchedEntries = response.data.entries;
-          setEntries(fetchedEntries); // Set fetched entries to the state
 
-          // Extract mood data from the last 7 entries
-          const moods = fetchedEntries.slice().reverse().slice(0, 7).map(entry => entry.mood);
+          const moods = fetchedEntries
+            .slice().reverse().slice(0, 7)
+            .map(entry => moodNums.get(entry.mood) || 0);
+
           setMoodData(moods);
         } else {
           Alert.alert('Error', response.data.error);
         }
       } catch (error) {
         console.log("Error fetching entries:", error);
-        console.log("Response data:", error.response.data);
-        console.log("Response status:", error.response.status);
-        console.log("Response headers:", error.response.headers);
         Alert.alert('Error', error.message);
       }
     };
@@ -39,36 +35,19 @@ export default function MoodGraph(){
     fetchEntries();
   }, []);
 
-     const data = {
-       labels: ["1","2","3","4","5","6","7"], // just 1 to 7 for now
-       datasets: [
-         {
-           data: moodData.length > 0 ? moodData : [0, 0, 0, 0, 0, 0, 0],
-         }
-       ]
-     };
-
-    return(
-        <View>
-          <LineChart
-            data={data}
-            width={Dimensions.get("window").width - 60} // from react-native
-            height={220}
-            yAxisLabel=""
-            yAxisInterval={1} // optional, defaults to 1
-            chartConfig={chartConfig}
-            bezier
-            style={{
-              marginVertical: 8,
-              borderRadius: 16
-            }}
-          />
-            {moodData.length === 0 && (
-              <Text style={styles.subtitle}>Log entries to see graph</Text>
-            )}
-        </View>
-
-    )
+  return (
+    <View style={styles.subtitle}>
+      {moodData.length === 0 ? (
+        <Text style={styles.subtitle}>Log entries to see data</Text>
+      ) : (
+        moodData.map((mood, index) => (
+          <Text key={index} style={styles.moodText}>
+            {`Mood ${index + 1}: ${mood}`}
+          </Text>
+        ))
+      )}
+    </View>
+  );
 }
 
 const screenWidth = Dimensions.get("window").width;
@@ -83,13 +62,23 @@ const chartConfig ={
     style: {borderRadius: 16},
     propsForDots: { r: "6", strokeWidth: "2", stroke: "#092b4d"}
 }
+const moodNums = new Map([
+  ["Very Bad", 1],
+  ["Bad", 2],
+  ["Okay", 3],
+  ["Good", 4],
+  ["Great", 5]
+]);
 
 const styles = StyleSheet.create({
   subtitle: {
     fontSize: 18,
     color: '#ff3b44',
     marginBottom: 10,
-    marginLeft: 10,
-    marginRight: 2,
-    }
+  },
+  moodText: {
+    fontSize: 16,
+    color: '#b3b5b4',
+    marginBottom: 5,
+  }
 });
