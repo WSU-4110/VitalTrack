@@ -5,7 +5,7 @@ from model.entries_model import Entry
 class Medication(me.EmbeddedDocument):
     name = me.StringField(required=True)
     dosage = me.StringField(required=True)
-    time_logged = me.DateTimeField(required=True)
+    frequency = me.StringField(required=True)
 
 
 class User(me.Document):

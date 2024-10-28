@@ -3,32 +3,28 @@ from datetime import datetime
 from remotecalls.mongodb_facade import mongo_db_facade
 from model.user_model import Medication
 
-
 log_medication_blueprint = Blueprint("log_medication", __name__)
 
-@log_medication_blueprint.route("/logMedication", methods=["POST"])
-def log_medication():
-    
-    data = request.get_json()
-    
-    user_id = data.get("user_id")
-    name = data.get("name")
-    dosage = data.get("dosage")
-    time_logged = datetime.utcnow()
-
-    if not user_id or not name or not dosage:
-        return jsonify({"error": "User ID, Name, and Dosage are required"}), 400
-
+@log_medication_blueprint.route("/logMedication/<user_id>", methods=["POST"])
+def log_medication(user_id):
     user = mongo_db_facade.get_user_by_id(user_id)
-
     if not user:
         return jsonify({"error": "User not found"}), 404
+
+    if user.entries is None:
+        user.entries = []
+
+    data = request.get_json()
+    name = data.get("name", "Default Medication")
+    dosage = data.get("dosage", "Default Dosage")
+    frequency =data.get("frequency")
 
     medication = Medication(
         name=name,
         dosage=dosage,
-        time_logged=time_logged
+        frequency = frequency
     )
     user.medications.append(medication)
     mongo_db_facade.save(user)
+    
     return jsonify({"message": "Medication logged successfully!"}), 201
