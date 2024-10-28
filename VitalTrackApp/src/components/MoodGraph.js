@@ -19,7 +19,7 @@ export default function MoodGraph() {
           const fetchedEntries = response.data.entries;
 
           const moods = fetchedEntries
-            .slice().reverse().slice(0, 7)
+            .slice().slice(0, 7)
             .map(entry => moodNums.get(entry.mood) || 0);
 
           setMoodData(moods);
@@ -35,16 +35,23 @@ export default function MoodGraph() {
     fetchEntries();
   }, []);
 
-  return (
-    <View style={styles.subtitle}>
+ return (
+    <View style={styles.container}>
       {moodData.length === 0 ? (
         <Text style={styles.subtitle}>Log entries to see data</Text>
       ) : (
-        moodData.map((mood, index) => (
-          <Text key={index} style={styles.moodText}>
-            {`Mood ${index + 1}: ${mood}`}
-          </Text>
-        ))
+        <ScrollView horizontal>
+          <LineChart
+            data={{
+              labels: moodData.map((_, index) => `Day ${index + 1}`),
+              datasets: [{ data: moodData }],
+            }}
+            width={screenWidth - 16}
+            height={220}
+            chartConfig={chartConfig}
+            style={styles.chartStyle}
+          />
+        </ScrollView>
       )}
     </View>
   );
