@@ -77,18 +77,8 @@ export default function App() {
     }
   }
 
-  const getToken = async () => {
-    try {
-      const token = await messaging().getToken();
-      console.log('Token:', token);
-    } catch (error) {
-      console.error('Error getting token:', error);
-    }
-  };
-
   useEffect(() => {
     requestUserPermission();
-    getToken();
   }, []);
 
   return (
