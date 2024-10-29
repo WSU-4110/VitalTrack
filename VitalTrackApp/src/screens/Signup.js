@@ -17,6 +17,8 @@ const baseUrl = 'http://10.0.2.2:5000';
 export default function SignupScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [name, setName] = useState('');
+
   const navigation = useNavigation();
 
   function handleSubmit() {
@@ -66,7 +68,12 @@ export default function SignupScreen() {
       />
 
       <Text style={styles.title}>Welcome</Text>
-
+      <TextInput
+        placeholder="Name"
+        style={styles.input}
+        placeholderTextColor="#888"
+        onChangeText={text => setName(text)}
+      />
       <TextInput
         placeholder="Email"
         style={styles.input}
