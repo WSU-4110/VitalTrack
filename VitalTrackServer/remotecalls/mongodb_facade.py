@@ -21,7 +21,14 @@ class MongoDbFacade:
 
     def save(self, document) -> None:
         document.save()
-
+    def get_medications_by_user_id(self, user_id: str):
+        """Retrieve all medications for a specific user by user_id"""
+       
+        user = User.objects(user_id=user_id).first()
+        if user:
+            return user.medications
+        else:
+            return []
     def get_user_by_id(self, id: str) -> str:
         return User.objects(user_id=id).first()
 
