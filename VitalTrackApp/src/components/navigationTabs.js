@@ -4,6 +4,7 @@ import HomeScreen from '../screens/Home';
 import EntriesScreen from '../screens/Entries';
 import CalendarScreen from '../screens/Calendar';
 import AnalyticsScreen from '../screens/Analytics';
+import MedicationsScreen from "../screens/Medication";
 import { Image } from 'react-native';
 
 const Tab = createBottomTabNavigator();
@@ -12,6 +13,7 @@ import homeIcon from '../../assets/icons/navigation/home-colored.png';
 import calendarIcon from '../../assets/icons/navigation/calendar.webp';
 import analyticsIcon from '../../assets/icons/navigation/analytics.png';
 import entriesIcon from '../../assets/icons/navigation/journal.png';
+import medicationIcon from "../../assets/icons/navigation/Medication.png";
 
 export default function MyTabs() {
   return (
@@ -29,6 +31,9 @@ export default function MyTabs() {
             iconSource = analyticsIcon;
           } else if (route.name === 'Entries') {
             iconSource = entriesIcon;
+          }
+          else if (route.name === 'Medications') {
+            iconSource = medicationIcon;
           }
 
           return (
@@ -49,6 +54,7 @@ export default function MyTabs() {
       <Tab.Screen name="Entries" component={EntriesScreen} />
       <Tab.Screen name="Calendar" component={CalendarScreen} />
       <Tab.Screen name="Analytics" component={AnalyticsScreen} />
+      <Tab.Screen name ='Medications' component={MedicationsScreen}/>
     </Tab.Navigator>
   );
 }
