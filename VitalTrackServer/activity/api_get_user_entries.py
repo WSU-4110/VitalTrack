@@ -6,7 +6,7 @@ import datetime
 get_entries_blueprint = Blueprint("getEntries", __name__)
 
 def entry_to_dict(entry):
-
+  
     date = entry.date if isinstance(entry.date, str) else entry.date.isoformat()
     return {
         "date": date,

@@ -10,6 +10,7 @@ import SettingsScreen from './src/screens/Settings';
 import SignupScreen from './src/screens/Signup';
 import AnalyticsScreen from './src/screens/Analytics';
 import CalendarScreen from './src/screens/Calendar';
+import MedicationsScreen from './src/screens/Medication';
 import MyTabs from './src/components/navigationTabs';  // Import MyTabs
 const Stack = createStackNavigator();
 
@@ -61,6 +62,11 @@ function AppNavigator() {
       <Stack.Screen
         name="Analytics"
         component={AnalyticsScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="Medication"
+        component={MedicationsScreen}
         options={{ headerShown: false }}
       />
     </Stack.Navigator>
