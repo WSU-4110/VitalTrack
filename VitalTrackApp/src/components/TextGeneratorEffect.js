@@ -1,5 +1,6 @@
 import React, {useEffect, useState} from 'react';
-export default function TextGeneratorEffect({text, speed = 100}) {
+import {Text} from 'react-native';
+export default function TextGeneratorEffect({text, speed = 100, style}) {
   const [displayedText, setDisplayedText] = useState('');
 
   useEffect(() => {
@@ -16,5 +17,5 @@ export default function TextGeneratorEffect({text, speed = 100}) {
     return () => clearInterval(interval);
   }, [text, speed]);
 
-  return <Text>{displayedText}</Text>;
+  return <Text style = {style} >{displayedText}</Text>;
 }

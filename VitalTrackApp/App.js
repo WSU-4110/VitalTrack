@@ -12,7 +12,6 @@ import AnalyticsScreen from './src/screens/Analytics';
 import CalendarScreen from './src/screens/Calendar';
 import MedicationsScreen from './src/screens/Medication';
 import MyTabs from './src/components/navigationTabs';  // Import MyTabs
-
 const Stack = createStackNavigator();
 
 function AppNavigator() {
