@@ -1,20 +1,21 @@
-import { NavigationContainer } from '@react-navigation/native';
-import React from 'react';
-import { createStackNavigator } from '@react-navigation/stack';
+import messaging from '@react-native-firebase/messaging';
+import {NavigationContainer} from '@react-navigation/native';
+import {createStackNavigator} from '@react-navigation/stack';
+import React, {useEffect} from 'react';
 import ProtectedRoute from './src/components/ProtectedRoute';
-import { AuthProvider, useAuth } from './src/contexts/AuthContext';
+import MyTabs from './src/components/navigationTabs'; // Import MyTabs
+import {AuthProvider, useAuth} from './src/contexts/AuthContext';
+import AnalyticsScreen from './src/screens/Analytics';
+import CalendarScreen from './src/screens/Calendar';
 import EntriesScreen from './src/screens/Entries';
-import HomeScreen from './src/screens/Home';
 import LoginScreen from './src/screens/Login';
 import SettingsScreen from './src/screens/Settings';
 import SignupScreen from './src/screens/Signup';
-import AnalyticsScreen from './src/screens/Analytics';
-import CalendarScreen from './src/screens/Calendar';
-import MyTabs from './src/components/navigationTabs';  // Import MyTabs
+
 const Stack = createStackNavigator();
 
 function AppNavigator() {
-  const { currentUser, loading } = useAuth();
+  const {currentUser, loading} = useAuth();
 
   if (loading) {
     return null;
@@ -25,17 +26,14 @@ function AppNavigator() {
       <Stack.Screen
         name="Signup"
         component={SignupScreen}
-        options={{ headerShown: false }}
+        options={{headerShown: false}}
       />
       <Stack.Screen
         name="Login"
         component={LoginScreen}
-        options={{ headerShown: false }}
+        options={{headerShown: false}}
       />
-      <Stack.Screen
-        name="Home"
-        options={{ headerShown: false }}
-      >
+      <Stack.Screen name="Home" options={{headerShown: false}}>
         {() => (
           <ProtectedRoute>
             <MyTabs />
@@ -46,28 +44,53 @@ function AppNavigator() {
       <Stack.Screen
         name="Settings"
         component={SettingsScreen}
-        options={{ headerShown: false, tabBarStyle: { display: 'none' } }} // Hide tab bar
+        options={{headerShown: false, tabBarStyle: {display: 'none'}}} // Hide tab bar
       />
       <Stack.Screen
         name="Entries"
         component={EntriesScreen}
-        options={{ headerShown: false }}
+        options={{headerShown: false}}
       />
       <Stack.Screen
         name="Calendar"
         component={CalendarScreen}
-        options={{ headerShown: false }}
+        options={{headerShown: false}}
       />
       <Stack.Screen
         name="Analytics"
         component={AnalyticsScreen}
-        options={{ headerShown: false }}
+        options={{headerShown: false}}
       />
     </Stack.Navigator>
   );
 }
 
 export default function App() {
+  async function requestUserPermission() {
+    const authStatus = await messaging().requestPermission();
+    const enabled =
+      authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
+      authStatus === messaging.AuthorizationStatus.PROVISIONAL;
+
+    if (enabled) {
+      console.log('Authorization status:', authStatus);
+    }
+  }
+
+  const getToken = async () => {
+    try {
+      const token = await messaging().getToken();
+      console.log('Token:', token);
+    } catch (error) {
+      console.error('Error getting token:', error);
+    }
+  };
+
+  useEffect(() => {
+    requestUserPermission();
+    getToken();
+  }, []);
+
   return (
     <AuthProvider>
       <NavigationContainer>
