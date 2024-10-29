@@ -48,11 +48,8 @@ export default function HomeScreen() {
         </View>
 
         <View style={styles.box}>
-        <View style={styles.container}>
- 
-    </View>
           <Text style={styles.motivation}>
-            "Your journey to better health starts here!"
+            "Your journey to better health starts here."
           </Text>
         </View>
       </ScrollView>
