@@ -9,7 +9,7 @@ def create_user():
     data = request.get_json()
     uid = data.get("uid")
     email = data.get("email")
-    name = data.get("name", "")
+    name = data.get("name")
     age = data.get("age", 20)
 
 

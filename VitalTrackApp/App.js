@@ -11,6 +11,7 @@ import EntriesScreen from './src/screens/Entries';
 import LoginScreen from './src/screens/Login';
 import SettingsScreen from './src/screens/Settings';
 import SignupScreen from './src/screens/Signup';
+import MedicationsScreen from './src/screens/Medication';
 
 const Stack = createStackNavigator();
 
@@ -60,6 +61,11 @@ function AppNavigator() {
         name="Analytics"
         component={AnalyticsScreen}
         options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="Medication"
+        component={MedicationsScreen}
+        options={{ headerShown: false }}
       />
     </Stack.Navigator>
   );
