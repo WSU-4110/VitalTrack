@@ -23,7 +23,7 @@ jobs:
 
       # Install Node.js dependencies
       - name: Install Node.js dependencies
-        run: npm install
+        run: yarn
         working-directory: VitalTrackApp
 
       - name: Set up google-services.json
