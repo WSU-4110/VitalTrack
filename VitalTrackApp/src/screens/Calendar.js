@@ -18,8 +18,8 @@ export default function CalendarScreen() {
             try {
                 setLoading(true);
                 const userId = currentUser.uid;
-               
-                
+                const response = await fetch(`http://10.0.2.2:5000/getEntries/${userId}`, { method: 'GET' });
+                const result = await response.json();
                 if (result.success) {
                     setLoggedEntries(result.entries);
                 }
