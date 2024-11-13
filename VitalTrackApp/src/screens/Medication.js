@@ -256,6 +256,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         marginTop: 10,
         marginHorizontal: 15,
+        marginBottom: 18,
     },
     addButtonText: {
         color: '#FFFFFF',

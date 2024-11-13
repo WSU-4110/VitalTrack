@@ -1,22 +1,25 @@
-import React, { useCallback, useState } from 'react';
-import { ActivityIndicator, View, StatusBar, StyleSheet, Text, FlatList } from 'react-native';
+import React, { useState, useCallback } from 'react';
+import { ActivityIndicator, View, StatusBar, StyleSheet, Text, FlatList, TouchableOpacity, ScrollView } from 'react-native';
 import { Calendar } from 'react-native-calendars';
 import { useAuth } from '../contexts/AuthContext';
-import { useFocusEffect } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import moment from 'moment';
 
 export default function CalendarScreen() {
+    const navigation = useNavigation(); // Initialize navigation
     const { currentUser, loading: authLoading } = useAuth();
     const [selectedDate, setSelectedDate] = useState('');
     const [loggedEntries, setLoggedEntries] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [moodFilter, setMoodFilter] = useState('All');
 
     const fetchEntries = async () => {
         if (currentUser) {
             try {
                 setLoading(true);
                 const userId = currentUser.uid;
-                const response = await fetch(`http://10.0.2.2:5000/getEntries/${userId}`, { method: 'GET' });
-                const result = await response.json();
+               
+                
                 if (result.success) {
                     setLoggedEntries(result.entries);
                 }
@@ -36,11 +39,18 @@ export default function CalendarScreen() {
 
     const markedDates = loggedEntries.reduce((acc, entry) => {
         const moodColor = entry.mood === 'Good' ? '#4CAF50' : entry.mood === 'Okay' ? '#FFD700' : '#FF3B30';
-        acc[entry.date] = {
-            customStyles: { container: { backgroundColor: moodColor }, text: { color: 'white' } },
-        };
+        if (moodFilter === 'All' || moodFilter === entry.mood) {
+            acc[entry.date] = {
+                customStyles: { container: { backgroundColor: moodColor, borderRadius: 5 }, text: { color: 'white' } },
+            };
+        }
         return acc;
     }, {});
+
+    const today = moment().format('YYYY-MM-DD');
+    if (!markedDates[today]) {
+        markedDates[today] = { customStyles: { container: { borderColor: '#4A90E2', borderWidth: 2, borderRadius: 5 } } };
+    }
 
     const filteredEntries = loggedEntries.filter((entry) => entry.date === selectedDate);
 
@@ -52,11 +62,7 @@ export default function CalendarScreen() {
         <View style={styles.container}>
             <StatusBar barStyle="light-content" />
 
-            {/* Calendar Title */}
-            <View style={styles.titleContainer}>
-                <Text style={styles.titleText}>Calendar</Text>
-            </View>
-
+            {/* Calendar Section */}
             <View style={styles.calendarContainer}>
                 <Calendar
                     onDayPress={(day) => setSelectedDate(day.dateString)}
@@ -86,6 +92,17 @@ export default function CalendarScreen() {
                 />
             </View>
 
+            {/* Mood Filter */}
+            <View style={styles.filterContainer}>
+                <Text style={styles.filterLabel}>Filter by Mood:</Text>
+                {['All', 'Good', 'Okay', 'Bad'].map((mood) => (
+                    <TouchableOpacity key={mood} onPress={() => setMoodFilter(mood)} style={styles.filterButton}>
+                        <Text style={[styles.filterText, moodFilter === mood && styles.filterTextActive]}>{mood}</Text>
+                    </TouchableOpacity>
+                ))}
+            </View>
+
+            {/* Legend Section */}
             <View style={styles.legendContainer}>
                 <View style={styles.legendItem}>
                     <View style={[styles.legendColorBox, { backgroundColor: '#4CAF50' }]} />
@@ -101,16 +118,15 @@ export default function CalendarScreen() {
                 </View>
             </View>
 
-            <View style={styles.entriesContainer}>
-                <Text style={styles.entriesHeader}>Entries</Text>
-
+            {/* Entries Section */}
+            <ScrollView style={styles.entriesContainer}>
+                <Text style={styles.entriesHeader}>Entries for {selectedDate || "Selected Date"}</Text>
                 {selectedDate && filteredEntries.length > 0 ? (
                     <FlatList
                         data={filteredEntries}
                         keyExtractor={(item) => item.id}
                         renderItem={({ item }) => (
                             <View style={styles.entryCard}>
-                                <Text style={styles.entryText}>Date: {item.date}</Text>
                                 <Text style={styles.entryText}>Mood: {item.mood}</Text>
                                 <Text style={styles.entryText}>Well-being: {item.well_being}</Text>
                                 <Text style={styles.entryText}>Sleep Quality: {item.sleep_quality}</Text>
@@ -124,7 +140,15 @@ export default function CalendarScreen() {
                         {selectedDate ? 'No entries for this date.' : 'Select a date to view entries.'}
                     </Text>
                 )}
-            </View>
+            </ScrollView>
+
+            {/* Floating Add Entry Button */}
+            <TouchableOpacity 
+                style={styles.addButton} 
+                onPress={() => navigation.navigate('Entries')} // Navigate to Entries screen
+            >
+                <Text style={styles.addButtonText}>+</Text>
+            </TouchableOpacity>
         </View>
     );
 }
@@ -133,16 +157,6 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#2E2E2E',
-    },
-    titleContainer: {
-        backgroundColor: '#7bb7e0',
-        paddingVertical: 10,
-        alignItems: 'center',
-    },
-    titleText: {
-        color: '#FFFFFF',
-        fontSize: 18,
-        fontWeight: 'bold',
     },
     calendarContainer: {
         backgroundColor: '#FFFFFF',
@@ -155,6 +169,28 @@ const styles = StyleSheet.create({
     calendar: {
         borderRadius: 8,
         overflow: 'hidden',
+    },
+    filterContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        paddingHorizontal: 15,
+        paddingVertical: 10,
+    },
+    filterLabel: {
+        color: '#FFFFFF',
+        fontSize: 16,
+    },
+    filterButton: {
+        marginHorizontal: 5,
+        paddingVertical: 5,
+    },
+    filterText: {
+        color: '#888888',
+        fontSize: 14,
+    },
+    filterTextActive: {
+        color: '#FFFFFF',
+        fontWeight: 'bold',
     },
     legendContainer: {
         flexDirection: 'row',
@@ -182,7 +218,7 @@ const styles = StyleSheet.create({
         borderRadius: 8,
         padding: 15,
         marginHorizontal: 15,
-        paddingTop: 10,
+        marginTop: 10,
     },
     entriesHeader: {
         color: '#333333',
@@ -193,13 +229,8 @@ const styles = StyleSheet.create({
     entryCard: {
         backgroundColor: '#FFFFFF',
         borderRadius: 8,
-        padding: 15,
+        padding: 10,
         marginBottom: 10,
-        shadowColor: '#000',
-        shadowOpacity: 0.1,
-        shadowRadius: 4,
-        shadowOffset: { width: 0, height: 2 },
-        elevation: 2,
     },
     entryText: {
         color: '#333333',
@@ -212,4 +243,21 @@ const styles = StyleSheet.create({
         fontSize: 14,
         marginTop: 10,
     },
+    addButton: {
+        backgroundColor: '#de0f3f',
+        width: 60,
+        height: 60,
+        borderRadius: 30,
+        justifyContent: 'center',
+        alignItems: 'center',
+        position: 'absolute',
+        right: 20,
+        bottom: 20,
+    },
+    addButtonText: {
+        color: 'white',
+        fontSize: 30,
+        fontWeight: 'bold',
+    },
 });
+
