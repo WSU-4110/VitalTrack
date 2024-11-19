@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, ScrollView, StyleSheet, Alert, ActivityIndicator } from 'react-native';
+import { View, Image, Text, ScrollView, StyleSheet, Alert, ActivityIndicator } from 'react-native';
 import MoodGraph from '../components/MoodGraph';
 import TextGeneratorEffect from '../components/TextGeneratorEffect';
 import axios from 'axios';
@@ -95,7 +95,14 @@ export default function AnalyticsScreen() {
         ) : (
           <Text style={styles.caption}>No AI insights available</Text>
         )}
+{/* Activity-Mood Insights Section */}
+{trendAnalysis?.activity_mood_insight && (
+  <View style={styles.section}>
+    <Text style={styles.title}>Activity Insights</Text>
+    <Text style={styles.caption}>{trendAnalysis.activity_mood_insight}</Text>
 
+  </View>
+)}
         {/* Mood Graph Section */}
         <View style={styles.section}>
           <Text style={styles.title}>Mental Health</Text>
@@ -125,21 +132,26 @@ export default function AnalyticsScreen() {
           </View>
         )}
 
-        {/* Weekly Summary Section */}
-        {trendAnalysis && trendAnalysis.weekly_summary?.date?.length > 0 ? (
-          <View style={styles.section}>
-            <Text style={styles.title}>Weekly Summary</Text>
-            {trendAnalysis.weekly_summary.date.map((date, index) => (
-              <Text key={index} style={styles.caption}>
-                {`Week of ${date}: Well-being: ${mapToWords(trendAnalysis.weekly_summary.well_being[index]) || "N/A"
-                  }, Mood: ${mapToWords(trendAnalysis.weekly_summary.mood[index]) || "N/A"
-                  }`}
-              </Text>
-            ))}
-          </View>
-        ) : (
-          <Text style={styles.caption}>No weekly summary available</Text>
-        )}
+{/* Weekly Summary Section */}
+{trendAnalysis && trendAnalysis.weekly_summary?.date?.length > 0 ? (
+  <View style={styles.section}>
+    <Text style={styles.title}>Weekly Summary</Text>
+    {trendAnalysis.weekly_summary.date.map((date, index) => (
+      <View key={index} style={{ marginBottom: 10 }}>
+        <Text style={styles.caption}>{`Week ending ${date}:`}</Text>
+        <Text style={styles.caption}>
+          {`- Well-being: ${mapToWords(trendAnalysis.weekly_summary.well_being[index]) || "N/A"}`}
+        </Text>
+        <Text style={styles.caption}>
+          {`- Mood: ${mapToWords(trendAnalysis.weekly_summary.mood[index]) || "N/A"}`}
+        </Text>
+      </View>
+    ))}
+  </View>
+) : (
+  <Text style={styles.caption}>No weekly summary available</Text>
+)}
+
 
       </View>
     </ScrollView>
@@ -202,4 +214,17 @@ const styles = StyleSheet.create({
     marginVertical: 4,
     paddingLeft: 10, 
   },
+  subtitle: {
+    fontSize: 18,
+    color: '#6a6a6a',
+    fontWeight: '500',
+    textAlign: 'center',
+    marginVertical: 10,
+    letterSpacing: 0.5,
+    lineHeight: 22,
+    padding: 10, // Add padding around the text
+    backgroundColor: '#f0f4f8', // Light background color
+    borderRadius: 8, // Round corners
+  },
+  
 });
