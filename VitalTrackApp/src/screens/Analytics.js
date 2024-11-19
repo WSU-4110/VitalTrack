@@ -83,10 +83,18 @@ export default function AnalyticsScreen() {
         <Text style={styles.subtitle}>An overview of your wellbeing</Text>
 
         {/* AI Insights Section */}
-        <View style={styles.section}>
-          <Text style={styles.title}>AI Insights</Text>
-          <TextGeneratorEffect style={styles.caption} text={tips ? tips.message : ""} />
-        </View>
+        {tips && tips.message?.length > 0 ? (
+          <View style={styles.section}>
+            <Text style={styles.title}>AI Insights</Text>
+            {tips.message.map((tip, index) => (
+              <Text key={index} style={styles.bulletPoint}>
+                {`• ${tip}`}
+              </Text>
+            ))}
+          </View>
+        ) : (
+          <Text style={styles.caption}>No AI insights available</Text>
+        )}
 
         {/* Mood Graph Section */}
         <View style={styles.section}>
@@ -104,36 +112,34 @@ export default function AnalyticsScreen() {
             <Text style={styles.caption}>Weekly averages of well-being and mood:</Text>
             <Text style={styles.caption}>
               {`Well-being: ${trendAnalysis.moving_averages?.well_being?.length > 0
-                  ? mapToWords(trendAnalysis.moving_averages?.well_being?.slice(-1)[0])
-                  : "No data available"
+                ? mapToWords(trendAnalysis.moving_averages?.well_being?.slice(-1)[0])
+                : "No data available"
                 }`}
             </Text>
             <Text style={styles.caption}>
               {`Mood: ${trendAnalysis.moving_averages?.mood?.length > 0
-                  ? mapToWords(trendAnalysis.moving_averages?.mood?.slice(-1)[0])
-                  : "No data available"
+                ? mapToWords(trendAnalysis.moving_averages?.mood?.slice(-1)[0])
+                : "No data available"
                 }`}
             </Text>
           </View>
         )}
 
-{/* Weekly Summary Section */}
-{trendAnalysis && trendAnalysis.weekly_summary?.date?.length > 0 ? (
-  <View style={styles.section}>
-    <Text style={styles.title}>Weekly Summary</Text>
-    {trendAnalysis.weekly_summary.date.map((date, index) => (
-      <Text key={index} style={styles.caption}>
-        {`Week of ${date}: Well-being: ${
-          mapToWords(trendAnalysis.weekly_summary.well_being[index]) || "N/A"
-        }, Mood: ${
-          mapToWords(trendAnalysis.weekly_summary.mood[index]) || "N/A"
-        }`}
-      </Text>
-    ))}
-  </View>
-) : (
-  <Text style={styles.caption}>No weekly summary available</Text>
-)}
+        {/* Weekly Summary Section */}
+        {trendAnalysis && trendAnalysis.weekly_summary?.date?.length > 0 ? (
+          <View style={styles.section}>
+            <Text style={styles.title}>Weekly Summary</Text>
+            {trendAnalysis.weekly_summary.date.map((date, index) => (
+              <Text key={index} style={styles.caption}>
+                {`Week of ${date}: Well-being: ${mapToWords(trendAnalysis.weekly_summary.well_being[index]) || "N/A"
+                  }, Mood: ${mapToWords(trendAnalysis.weekly_summary.mood[index]) || "N/A"
+                  }`}
+              </Text>
+            ))}
+          </View>
+        ) : (
+          <Text style={styles.caption}>No weekly summary available</Text>
+        )}
 
       </View>
     </ScrollView>
@@ -189,5 +195,11 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: '#333',
     marginTop: 10,
+  },
+  bulletPoint: {
+    fontSize: 16,
+    color: '#b3b5b4',
+    marginVertical: 4,
+    paddingLeft: 10, 
   },
 });
