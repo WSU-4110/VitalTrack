@@ -7,6 +7,8 @@ from activity.api_log_entry import log_entry_blueprint
 
 from activity.api_log_medication import log_medication_blueprint
 from activity.api_get_medications import get_medications_blueprint
+from activity.api_get_user_trends import get_trends_blueprint
+
 from remotecalls.mongodb_facade import mongo_db_facade
 from model.user_model import User
 from flask_cors import CORS
@@ -19,6 +21,8 @@ app.register_blueprint(get_entries_blueprint)
 app.register_blueprint(log_entry_blueprint)
 app.register_blueprint(log_medication_blueprint)
 app.register_blueprint(get_medications_blueprint)
+app.register_blueprint(get_trends_blueprint)  
+
 CORS(app)
 
 if __name__ == "__main__":
