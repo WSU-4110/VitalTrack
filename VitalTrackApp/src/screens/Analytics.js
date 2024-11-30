@@ -1,29 +1,62 @@
 import React, { useState, useEffect } from 'react';
-import {View, Text, ScrollView, StyleSheet, Alert} from 'react-native';
-import MoodGraph from '../components/analytics/MoodGraph';
-import ActivityGraph from '../components/analytics/ActivityGraph';
+import { View, Image, Text, ScrollView, StyleSheet, Alert, ActivityIndicator } from 'react-native';
+import MoodGraph from '../components/MoodGraph';
 import TextGeneratorEffect from '../components/TextGeneratorEffect';
 import axios from 'axios';
 import auth from '@react-native-firebase/auth';
 
-
 export default function AnalyticsScreen() {
   const [tips, setTips] = useState(null);
+  const [trendAnalysis, setTrendAnalysis] = useState(null);
+  const [loading, setLoading] = useState(false);
   const userId = auth().currentUser ? auth().currentUser.uid : null;
 
+  // Helper function to map numeric values to descriptive words
+  const mapToWords = (value) => {
+    if (value <= 1.5) return "Low";
+    if (value <= 2.5) return "Moderate";
+    if (value <= 3.5) return "Good";
+    if (value > 3.5) return "Great";
+    return "No data available"; // Fallback for unexpected values
+  };
+  // Fetch trend analysis data
+  useEffect(() => {
+    const fetchTrends = async () => {
+      try {
+        console.log(`Fetching trends for user ID: ${userId}`);
+        const response = await fetch(`http://10.0.2.2:5000/getTrends/${userId}`);
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        const data = await response.json();
+        console.log('Trends data:', data);
+        setTrendAnalysis(data.trends);
+      } catch (error) {
+        console.log('Error fetching trends:', error.message);
+      }
+    };
+
+    fetchTrends();
+  }, [userId]);
+
+
+  // Fetch AI tips
   useEffect(() => {
     const fetchTips = async () => {
-      if (!userId) return;
+      if (!userId) {
+        console.log('No user ID, skipping tips fetch');
+        return;
+      }
 
       try {
+        console.log(`Fetching tips for user ID: ${userId}`);
         const response = await axios.get(`http://10.0.2.2:5000/tips/${userId}`);
+        console.log('Tips response:', response.data);
         if (response.data) {
           setTips(response.data);
         } else {
           Alert.alert('Error', 'No tips found');
         }
       } catch (error) {
-        console.log("Error fetching tips:", error);
+        console.log('Error fetching tips:', error.message);
         Alert.alert('Error', error.message);
       }
     };
@@ -31,33 +64,95 @@ export default function AnalyticsScreen() {
     fetchTips();
   }, [userId]);
 
+  // Show loading indicator if fetching data
+  if (loading) {
+    return (
+      <View style={styles.container}>
+        <ActivityIndicator size="large" color="#007bff" />
+        <Text style={styles.loadingText}>Loading analytics...</Text>
+      </View>
+    );
+  }
 
-  return(
+  return (
     <ScrollView>
       <View style={styles.container}>
         <View style={styles.header}>
-            <Text style={styles.headerText}>Analytics</Text>
-          </View>
+          <Text style={styles.headerText}>Analytics</Text>
+        </View>
         <Text style={styles.subtitle}>An overview of your wellbeing</Text>
 
-        <View style={styles.section}>
+        {/* AI Insights Section */}
+        {tips && tips.message?.length > 0 ? (
+          <View style={styles.section}>
             <Text style={styles.title}>AI Insights</Text>
-            <TextGeneratorEffect style={styles.caption} text={tips ? tips.message : " "}/>
+            {tips.message.map((tip, index) => (
+              <Text key={index} style={styles.bulletPoint}>
+                {`• ${tip}`}
+              </Text>
+            ))}
+          </View>
+        ) : (
+          <Text style={styles.caption}>No AI insights available</Text>
+        )}
+{/* Activity-Mood Insights Section */}
+{trendAnalysis?.activity_mood_insight && (
+  <View style={styles.section}>
+    <Text style={styles.title}>Activity Insights</Text>
+    <Text style={styles.caption}>{trendAnalysis.activity_mood_insight}</Text>
+
+  </View>
+)}
+        {/* Mood Graph Section */}
+        <View style={styles.section}>
+          <Text style={styles.title}>Mental Health</Text>
+          <Text style={styles.caption}>Your mood this week</Text>
+          <MoodGraph />
         </View>
 
-        <View style={styles.section}>
-            <Text style={styles.title}>Mental Health</Text>
-            <Text style={styles.caption}>Your mood this week</Text>
-            <MoodGraph />
-        </View>
 
 
-        <View style={styles.section}>
-            <Text style={styles.title}>Physical Health</Text>
-            <Text style={styles.caption}>Your activities this week</Text>
-            <ActivityGraph />
+        {/* Moving Averages Section */}
+        {trendAnalysis && (
+          <View style={styles.section}>
+            <Text style={styles.title}>Moving Averages</Text>
+            <Text style={styles.caption}>Weekly averages of well-being and mood:</Text>
+            <Text style={styles.caption}>
+              {`Well-being: ${trendAnalysis.moving_averages?.well_being?.length > 0
+                ? mapToWords(trendAnalysis.moving_averages?.well_being?.slice(-1)[0])
+                : "No data available"
+                }`}
+            </Text>
+            <Text style={styles.caption}>
+              {`Mood: ${trendAnalysis.moving_averages?.mood?.length > 0
+                ? mapToWords(trendAnalysis.moving_averages?.mood?.slice(-1)[0])
+                : "No data available"
+                }`}
+            </Text>
+          </View>
+        )}
 
-         </View>
+{/* Weekly Summary Section */}
+{trendAnalysis && trendAnalysis.weekly_summary?.date?.length > 0 ? (
+  <View style={styles.section}>
+    <Text style={styles.title}>Weekly Summary</Text>
+    {trendAnalysis.weekly_summary.date.map((date, index) => (
+      <View key={index} style={{ marginBottom: 10 }}>
+        <Text style={styles.caption}>{`Week ending ${date}:`}</Text>
+        <Text style={styles.caption}>
+          {`- Well-being: ${mapToWords(trendAnalysis.weekly_summary.well_being[index]) || "N/A"}`}
+        </Text>
+        <Text style={styles.caption}>
+          {`- Mood: ${mapToWords(trendAnalysis.weekly_summary.mood[index]) || "N/A"}`}
+        </Text>
+      </View>
+    ))}
+  </View>
+) : (
+  <Text style={styles.caption}>No weekly summary available</Text>
+)}
+
+
       </View>
     </ScrollView>
   );
@@ -70,17 +165,17 @@ const styles = StyleSheet.create({
     paddingVertical: 40,
     backgroundColor: '#b3b5b4',
   },
-   header: {
-     width: '100%',
-     padding: 20,
-     backgroundColor: '#7bb7e0',
-     alignItems: 'center',
-   },
-   headerText: {
-     fontSize: 34,
-     color: 'white',
-     fontWeight: 'bold',
-   },
+  header: {
+    width: '100%',
+    padding: 20,
+    backgroundColor: '#7bb7e0',
+    alignItems: 'center',
+  },
+  headerText: {
+    fontSize: 34,
+    color: 'white',
+    fontWeight: 'bold',
+  },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
@@ -100,17 +195,36 @@ const styles = StyleSheet.create({
     color: '#b3b5b4',
     marginBottom: 8,
   },
-  graph: {
-      height: 200,
-      aspectRatio: 1.5,
-      marginBottom: 5,
-    },
   section: {
-      marginVertical: 20,
-      paddingHorizontal: 20,
-      paddingVertical: 10,
-      borderRadius: 10,
-      backgroundColor: '#333',
-      width: '95%',
-    }
+    marginVertical: 20,
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 10,
+    backgroundColor: '#333',
+    width: '95%',
+  },
+  loadingText: {
+    fontSize: 18,
+    color: '#333',
+    marginTop: 10,
+  },
+  bulletPoint: {
+    fontSize: 16,
+    color: '#b3b5b4',
+    marginVertical: 4,
+    paddingLeft: 10,
+  },
+  subtitle: {
+    fontSize: 18,
+    color: '#6a6a6a',
+    fontWeight: '500',
+    textAlign: 'center',
+    marginVertical: 10,
+    letterSpacing: 0.5,
+    lineHeight: 22,
+    padding: 10, // Add padding around the text
+    backgroundColor: '#f0f4f8', // Light background color
+    borderRadius: 8, // Round corners
+  },
+
 });
