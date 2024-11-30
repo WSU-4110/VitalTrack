@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import {View, Text, ScrollView, StyleSheet, Alert} from 'react-native';
-import MoodGraph from '../components/MoodGraph';
+import MoodGraph from '../components/analytics/MoodGraph';
+import ActivityGraph from '../components/analytics/ActivityGraph';
 import TextGeneratorEffect from '../components/TextGeneratorEffect';
 import axios from 'axios';
 import auth from '@react-native-firebase/auth';
@@ -53,9 +54,8 @@ export default function AnalyticsScreen() {
 
         <View style={styles.section}>
             <Text style={styles.title}>Physical Health</Text>
-            <Text style={styles.caption}>This month, you were less likely to [have headaches] when you
-             [slept well].</Text>
-
+            <Text style={styles.caption}>Your activities this week</Text>
+            <ActivityGraph />
 
          </View>
       </View>

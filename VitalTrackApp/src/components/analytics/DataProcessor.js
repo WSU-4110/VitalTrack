@@ -35,3 +35,17 @@ export const processMoodData = (entries) => {
     .slice(0, 7)
     .map(entry => moodNums.get(entry.mood) || 0);
 };
+
+export const processActivities = (entries) => {
+  const activityCounts = {};
+  const recentEntries = entries.slice(0, 7);
+
+  recentEntries.forEach(entry => {
+    const activity = entry.activityType;
+    if (activity) {
+      activityCounts[activity] = (activityCounts[activity] || 0) + 1;
+    }
+  });
+
+  return activityCounts;
+};
