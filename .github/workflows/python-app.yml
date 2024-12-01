@@ -48,4 +48,5 @@ jobs:
       - name: Test with pytest
         working-directory: VitalTrackServer
         run: |
-          python3 -m pytest
+          export PYTHONPATH=$(pwd)
+          pytest test/ --maxfail=5 --disable-warnings -v
