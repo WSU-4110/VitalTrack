@@ -1,7 +1,7 @@
 import unittest
 from unittest.mock import patch
 import pandas as pd
-from trend_analysis import TrendAnalyzer
+from ..activity.trend_analysis import TrendAnalyzer
 
 class TestTrendAnalyzer(unittest.TestCase):
     def setUp(self):
