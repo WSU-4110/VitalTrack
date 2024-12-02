@@ -1,5 +1,6 @@
 import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react-native';
+import { transformActivityData } from '../src/components/analytics/ActivityGraph';
 import ActivityGraph from '../src/components/analytics/ActivityGraph';
 import { fetchEntries, processActivities } from '../src/components/analytics/DataProcessor';
 import { BarChart } from 'react-native-chart-kit';
@@ -8,6 +9,24 @@ jest.mock('../src/components/analytics/DataProcessor');
 jest.mock('react-native-chart-kit', () => ({
   BarChart: jest.fn(() => <></>),
 }));
+
+describe('transformActivityData function', () => {
+
+  it('should make activity data the correct format', () => {
+    const mockActivityData = { Yoga: 5, Walk: 3, Weights: 2 };
+
+    const result = transformActivityData(mockActivityData);
+
+    expect(result).toEqual({
+      labels: ['Yoga', 'Walk', 'Weights'],
+      datasets: [
+        {
+          data: [5, 3, 2],
+        },
+      ],
+    });
+  });
+ });
 
 describe('ActivityGraph Component', () => {
 
