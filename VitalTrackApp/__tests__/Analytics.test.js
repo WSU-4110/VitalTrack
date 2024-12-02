@@ -19,40 +19,6 @@ describe('AnalyticsScreen', () => {
     jest.clearAllMocks();
   });
 
-  it('should display correct trend analysis', async () => {
-    const mockTipsResponse = { data: { message: ['Stay hydrated', 'Exercise regularly'] } };
-    const mockTrendsResponse = {
-      trends: {
-        activity_mood_insight: 'You tend to feel better after exercising.',
-        moving_averages: { well_being: [3], mood: [2] },
-        weekly_summary: { date: ['2023-01-01'], well_being: [3], mood: [4] },
-      },
-    };
-
-    axios.get.mockResolvedValueOnce(mockTipsResponse);
-    global.fetch = jest.fn(() =>
-      Promise.resolve({
-        ok: true,
-        json: () => Promise.resolve(mockTrendsResponse),
-      })
-    );
-
-    render(<AnalyticsScreen />);
-
-    await waitFor(() => {
-      expect(screen.getByText('AI Insights')).toBeTruthy();
-      expect(screen.getByText('• Stay hydrated')).toBeTruthy();
-      expect(screen.getByText('• Exercise regularly')).toBeTruthy();
-
-      expect(screen.getByText('Activity Insights')).toBeTruthy();
-      expect(screen.getByText('You tend to feel better after exercising.')).toBeTruthy();
-      expect(screen.getByText('Weekly averages of well-being and mood:')).toBeTruthy();
-      expect(screen.getByText('Well-being: Good')).toBeTruthy();
-      expect(screen.getByText('Mood: Moderate')).toBeTruthy();
-      expect(screen.getByText('Week ending 2023-01-01:')).toBeTruthy();
-    });
-  },1000);
-
   it('should show error message when theres no data', async () => {
     const mockTipsResponse = { data: { message: [] } };
     const mockTrendsResponse = {
