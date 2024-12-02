@@ -20,27 +20,30 @@ describe('AnalyticsScreen', () => {
   });
 
   it('should display correct trend analysis', async () => {
-    global.fetch = jest.fn().mockResolvedValueOnce({
-      ok: true,
-      json: async () => ({
-        trends: {
-          activity_mood_insight: 'You tend to feel better after exercising.',
-          moving_averages: {
-            well_being: [3],
-            mood: [2],
-          },
-          weekly_summary: {
-            date: ['2023-01-01'],
-            well_being: [3],
-            mood: [2],
-          },
-        },
-      }),
-    });
+    const mockTipsResponse = { data: { message: ['Stay hydrated', 'Exercise regularly'] } };
+    const mockTrendsResponse = {
+      trends: {
+        activity_mood_insight: 'You tend to feel better after exercising.',
+        moving_averages: { well_being: [3], mood: [2] },
+        weekly_summary: { date: ['2023-01-01'], well_being: [3], mood: [4] },
+      },
+    };
+
+    axios.get.mockResolvedValueOnce(mockTipsResponse);
+    global.fetch = jest.fn(() =>
+      Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve(mockTrendsResponse),
+      })
+    );
 
     render(<AnalyticsScreen />);
 
     await waitFor(() => {
+      expect(screen.getByText('AI Insights')).toBeTruthy();
+      expect(screen.getByText('• Stay hydrated')).toBeTruthy();
+      expect(screen.getByText('• Exercise regularly')).toBeTruthy();
+
       expect(screen.getByText('Activity Insights')).toBeTruthy();
       expect(screen.getByText('You tend to feel better after exercising.')).toBeTruthy();
       expect(screen.getByText('Weekly averages of well-being and mood:')).toBeTruthy();
@@ -51,11 +54,22 @@ describe('AnalyticsScreen', () => {
   });
 
   it('should show error message when theres no data', async () => {
-    global.fetch = jest.fn().mockResolvedValueOnce({
-      ok: true,
-      json: async () => ({}),
-    });
-    axios.get.mockResolvedValueOnce({ data: {} });
+    const mockTipsResponse = { data: { message: [] } };
+    const mockTrendsResponse = {
+      trends: {
+        activity_mood_insight: null,
+        moving_averages: { well_being: [], mood: [] },
+        weekly_summary: { date: [], well_being: [], mood: [] },
+      },
+    };
+
+    axios.get.mockResolvedValueOnce(mockTipsResponse);
+    global.fetch = jest.fn(() =>
+      Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve(mockTrendsResponse),
+      })
+    );
 
     render(<AnalyticsScreen />);
 
