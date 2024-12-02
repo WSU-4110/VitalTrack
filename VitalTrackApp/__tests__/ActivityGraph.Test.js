@@ -30,14 +30,14 @@ describe('transformActivityData function', () => {
 
 describe('ActivityGraph Component', () => {
 
-  it('should show error message when there is no activity data', async () => {
+  it('should show an empty chart when theres no activity data', async () => {
     fetchEntries.mockResolvedValue([]);
     processActivities.mockReturnValue({});
 
-    render(<ActivityGraph />);
+    const { queryByTestId } = render(<ActivityGraph />);
 
     await waitFor(() => {
-      expect(screen.getByText('Log entries to see data')).toBeTruthy();
+       expect(BarChart).toHaveBeenCalled();
     });
   });
 
