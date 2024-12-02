@@ -1,82 +1,32 @@
-# Mental-and-Physical-Health-Management
 
+# VitalTrack
 
-## VitalTrackServer
+## Description
 
-### Testing Instructions
-Run the following command in your command line:
+VitalTrack is a comprehensive solution for managing both mental and physical health. It allows users to:
+* Log daily health metrics, including mood, energy, sleep, physical activity, and stress.
+* Track trends and receive personalized insights through Large Language Models and Machine Learning.
+* Manage medication and set reminders.
+* Synchronize data between the mobile app and the backend server.
+  
+All of these features can be accessed through an intuitive Android application.
 
-```pip install -U pytest```
+## Getting Started
+Follow the [installation guide](INSTALLATION.md) for detailed setup and build instructions. Once installed:
+1. Start the backend server using `flask run`.
+2. Run the mobile application using `npx react-native run-android`.
 
-run ```pytest``` in command line
+## Running the Android Application
+1. **Using Android Studio Emulator**:
+   * Open Android Studio and set up an emulator.
+   * Launch the app on the emulator using `npx react-native run-android`.
+2. **Using a Physical Device**:
+   * Enable Developer Options and USB Debugging on your Android device.
+   * Connect your device via USB and run `npx react-native run-android`.
 
+## Authors
 
-### Formatting
-Run the following command in your command line:
-
-```pip install black ```
-
-After that you specify ```black filename.py``` in the terminal and black automatically formats your code. 
-If you want to format the whole directory, you can run ```black ./VitalTrackServer``` in the VitalTrack Directory
-
-## MongoDB Connection Setup
-
-To connect to MongoDB for this project, follow these steps:
-
-### 1. Install Required Python Packages
-
-Ensure you have Python installed. Then, install the project dependencies using the `requirements.txt` file:
-
-```bash
-pip install -r requirements.txt
-```
-
-### Setting Up Environment Variables
-
-1. Copy the `example.env` file to `.env`:
-
-```bash
-cp example.env .env
-```
-
-2. Follow instructions in the env file
-3. Add your IP address to mongo dashboard
-
-
-
-## VitalTrackApp
-
-### Install Dependencies
-
-Ensure you have the necessary dependencies installed for the React Native app. If you haven't already installed them, run the following command in your terminal:
-
-```bash
-npm install
-```
-
-
-### Set Up Android Emulator
-
-1. Install Android Studio if you haven't already: [Download Android Studio](https://developer.android.com/studio) 
-2. Set up your Android development environment as per the requirements of Android Studio.
-3. Create and configure an emulator from Android Studio through the Virtual Device Configuration (using AVD Manager).
-   
-   
-### Testing Instructions
-1. Start the Metro Bundler
-Run the following command to start the Metro Bundler from the VitalTrackApp directory:
-
-```bash
-npx react-native start
-```
-
-2. Run the Android App:
-After the Metro Bundler is running, open another terminal and run the following command to launch the Android app on your device or emulator:
-
-```bash
-npx react-native run-android
-```
-
-
-
-
+* Mary Jabro (maryjabro)<br />
+* Merwin (MerwinAamir1) <br />
+* Imad (imadhb)<br />
+* Kunjal (kparajuli21) <br />
