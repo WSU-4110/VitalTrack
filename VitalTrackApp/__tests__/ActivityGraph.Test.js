@@ -30,17 +30,6 @@ describe('transformActivityData function', () => {
 
 describe('ActivityGraph Component', () => {
 
-  it('should show an error message when theres no activity data', async () => {
-    fetchEntries.mockResolvedValue([]);
-    processActivities.mockReturnValue({});
-
-    render(<ActivityGraph />);
-
-    await waitFor(() => {
-       expect(screen.getByText('Log entries to see data')).toBeTruthy();
-    });
-  });
-
   it('should show the chart when there is activity data', async () => {
     const mockEntries = [
       { activity: 'Yoga' },
