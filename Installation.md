@@ -41,7 +41,7 @@ Update the `.env` file with your MongoDB connection string and other required va
 #### Run the Backend Server
 Start the server by running:
 ```bash
-python app.py
+flask run
 ```
 
 ### Testing Instructions
