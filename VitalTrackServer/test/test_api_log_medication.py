@@ -5,12 +5,12 @@ from dotenv import load_dotenv
 from types import SimpleNamespace
 import os
 import sys
-
+os.environ["MONGO_API_KEY"] = "test_api_key"
 load_dotenv()
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from activity.api_log_medication import log_medication_blueprint
-os.environ["MONGO_API_KEY"] = "test_api_key"
+
 
 
 class TestLogMedicationAPI(unittest.TestCase):
