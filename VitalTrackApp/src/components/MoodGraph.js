@@ -4,36 +4,20 @@ import {LineChart} from "react-native-chart-kit";
 import { Dimensions } from "react-native";
 import axios from 'axios';
 import auth from '@react-native-firebase/auth';
+import { fetchEntries, processMoodData } from '../components/analytics/DataProcessor';
 
 export default function MoodGraph() {
   const [moodData, setMoodData] = useState([]);
 
   useEffect(() => {
-    const fetchEntries = async () => {
-      const userId = auth().currentUser ? auth().currentUser.uid : null; // Get the user ID from Firebase
-      if (!userId) return;
+      const fetchMoodData = async () => {
+        const entries = await fetchEntries();
+        const processedMoodData = processMoodData(entries);
+        setMoodData(processedMoodData);
+      };
 
-      try {
-        const response = await axios.get(`http://10.0.2.2:5000/getEntries/${userId}`);
-        if (response.data.success) {
-          const fetchedEntries = response.data.entries;
-
-          const moods = fetchedEntries
-            .slice().slice(0, 7)
-            .map(entry => moodNums.get(entry.mood) || 0);
-
-          setMoodData(moods);
-        } else {
-          Alert.alert('Error', response.data.error);
-        }
-      } catch (error) {
-        console.log("Error fetching entries:", error);
-        Alert.alert('Error', error.message);
-      }
-    };
-
-    fetchEntries();
-  }, []);
+      fetchMoodData();
+    }, []);
 
  return (
     <View style={styles.container}>
