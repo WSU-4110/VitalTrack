@@ -1,0 +1,79 @@
+import React from 'react';
+import { render, screen, waitFor } from '@testing-library/react-native';
+import AnalyticsScreen from '../src/screens/Analytics';
+import axios from 'axios';
+import auth from '@react-native-firebase/auth';
+import MoodGraph from '../src/components/MoodGraph';
+
+jest.mock('axios');
+jest.mock('@react-native-firebase/auth', () => ({
+  __esModule: true,
+  default: jest.fn(() => ({
+    currentUser: { uid: 'mock-user-id' },
+  })),
+}));
+jest.mock('../src/components/MoodGraph', () => jest.fn(() => <></>));
+
+describe('AnalyticsScreen', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('should display correct trend analysis', async () => {
+    global.fetch = jest.fn().mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({
+        trends: {
+          activity_mood_insight: 'You tend to feel better after exercising.',
+          moving_averages: {
+            well_being: [3],
+            mood: [2],
+          },
+          weekly_summary: {
+            date: ['2023-01-01'],
+            well_being: [3],
+            mood: [2],
+          },
+        },
+      }),
+    });
+
+    render(<AnalyticsScreen />);
+
+    await waitFor(() => {
+      expect(screen.getByText('Activity Insights')).toBeTruthy();
+      expect(screen.getByText('You tend to feel better after exercising.')).toBeTruthy();
+      expect(screen.getByText('Weekly averages of well-being and mood:')).toBeTruthy();
+      expect(screen.getByText('Well-being: Good')).toBeTruthy();
+      expect(screen.getByText('Mood: Moderate')).toBeTruthy();
+      expect(screen.getByText('Week ending 2023-01-01:')).toBeTruthy();
+    });
+  });
+
+  it('should show error message when theres no data', async () => {
+    global.fetch = jest.fn().mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({}),
+    });
+    axios.get.mockResolvedValueOnce({ data: {} });
+
+    render(<AnalyticsScreen />);
+
+    await waitFor(() => {
+      expect(screen.getByText('No AI insights available')).toBeTruthy();
+      expect(screen.getByText('No weekly summary available')).toBeTruthy();
+    });
+  });
+
+  it('show show error message when theres network errors', async () => {
+    global.fetch = jest.fn().mockRejectedValueOnce(new Error('Network Error'));
+    axios.get.mockRejectedValueOnce(new Error('Network Error'));
+
+    render(<AnalyticsScreen />);
+
+    await waitFor(() => {
+      expect(screen.getByText('No AI insights available')).toBeTruthy();
+      expect(screen.getByText('No weekly summary available')).toBeTruthy();
+    });
+  });
+});
