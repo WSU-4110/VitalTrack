@@ -51,7 +51,7 @@ describe('AnalyticsScreen', () => {
       expect(screen.getByText('Mood: Moderate')).toBeTruthy();
       expect(screen.getByText('Week ending 2023-01-01:')).toBeTruthy();
     });
-  });
+  },1000);
 
   it('should show error message when theres no data', async () => {
     const mockTipsResponse = { data: { message: [] } };
