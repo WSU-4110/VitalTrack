@@ -1,4 +1,4 @@
-name: React Native Frontend CI
+name: React Native Gradle Build
 
 on:
   push:
@@ -35,11 +35,21 @@ jobs:
           sdkmanager --sdk_root=$ANDROID_HOME --licenses
           sdkmanager --sdk_root=$ANDROID_HOME "platform-tools" "platforms;android-34" "build-tools;34.0.0"
 
+      # Set up Node.js version
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "18"
+
       # Set up Gradle
-      - name: Setup Gradle
+      - name: Set up Gradle
         uses: gradle/gradle-build-action@v2
 
+      - name: Make gradlew executable
+        run: chmod +x ./android/gradlew
+        working-directory: VitalTrackApp
+
       # Run Gradle Custom Build Task
-      - name: Run Custom Build
+      - name: Run Gradle Custom Build
         working-directory: VitalTrackApp
         run: gradle customBuild
