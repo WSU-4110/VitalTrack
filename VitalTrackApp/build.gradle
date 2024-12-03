@@ -1,0 +1,87 @@
+plugins {
+    id 'base'
+}
+
+ext {
+    nodeVersion = '18'
+    androidSdkVersion = '34.0.0'
+    buildToolsVersion = '34.0.0'
+    androidHome = "${System.env.HOME}/Android"
+}
+
+task setupNode {
+    group = "setup"
+    description = "Set up Node.js"
+    doLast {
+        println "Setting up Node.js version $nodeVersion..."
+        exec {
+            commandLine 'curl', '-o-', "https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh", '|', 'bash'
+        }
+        exec {
+            commandLine 'nvm', 'install', nodeVersion
+        }
+    }
+}
+
+task installDependencies(type: Exec) {
+    group = "setup"
+    description = "Install Node.js dependencies using Yarn"
+    commandLine 'yarn'
+}
+
+task generateGoogleServices(type: Exec) {
+    group = "build"
+    description = "Generate google-services.json"
+    environment "FIREBASE_PROJECT_ID", System.getenv('FIREBASE_PROJECT_ID')
+    environment "FIREBASE_API_KEY", System.getenv('FIREBASE_API_KEY')
+    environment "FIREBASE_MOBILESDK_APP_ID", System.getenv('FIREBASE_MOBILESDK_APP_ID')
+    commandLine 'node', './scripts/generateGoogleServices.js'
+}
+
+task runTests(type: Exec) {
+    group = "test"
+    description = "Run unit tests using Jest"
+    commandLine 'npm', 'run', 'test'
+}
+
+task setupAndroidSdk(type: Exec) {
+    group = "setup"
+    description = "Install Android SDK command-line tools"
+    doLast {
+        println "Setting up Android SDK..."
+        exec {
+            commandLine 'sudo', 'apt-get', 'update'
+        }
+        exec {
+            commandLine 'sudo', 'apt-get', 'install', '-y', 'wget', 'unzip'
+        }
+        exec {
+            commandLine 'wget', 'https://dl.google.com/android/repository/commandlinetools-linux-8092744_latest.zip'
+        }
+        exec {
+            commandLine 'mkdir', '-p', "$androidHome/cmdline-tools"
+        }
+        exec {
+            commandLine 'unzip', 'commandlinetools-linux-8092744_latest.zip', '-d', "$androidHome/cmdline-tools"
+        }
+        exec {
+            commandLine 'sdkmanager', '--sdk_root=$androidHome', '--licenses'
+        }
+        exec {
+            commandLine 'sdkmanager', '--sdk_root=$androidHome', "platform-tools", "platforms;android-$androidSdkVersion", "build-tools;$buildToolsVersion"
+        }
+    }
+}
+
+task buildApk(type: Exec) {
+    group = "build"
+    description = "Build Android APK using Gradle"
+    commandLine './gradlew', 'assembleDebug'
+    workingDir 'android'
+}
+
+task build {
+    group = "build"
+    description = "Build the project (Node.js and Android)"
+    dependsOn installDependencies, generateGoogleServices, setupAndroidSdk, buildApk
+}
