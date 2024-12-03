@@ -40,10 +40,11 @@ class TestGetTrendsEndpoint(unittest.TestCase):
         data = response.get_json()
 
         # Assertions
-        self.assertEqual(response.status_code, 200)
-        self.assertTrue(data["success"])
-        self.assertIn("trends", data)
-        self.assertEqual(data["trends"], {"trend": "example trend"})
+        self.assertEqual(response.status_code, 200)  # Ensure success status
+        self.assertTrue(data["success"])  # Ensure success key is True
+        self.assertIn("trends", data)  # Ensure trends key is present
+        self.assertEqual(data["trends"], {"trend": "example trend"})  # Validate trend data
+
 
     @patch("remotecalls.mongodb_facade.mongo_db_facade.get_user_by_id")
     def test_get_trends_no_entries(self, mock_get_user_by_id):
@@ -58,7 +59,7 @@ class TestGetTrendsEndpoint(unittest.TestCase):
         # Assertions
         self.assertEqual(response.status_code, 404)
         self.assertFalse(data["success"])
-        self.assertEqual(data["error"], "No entries available for analysis")
+        self.assertEqual(data["error"], "User not found or no entries available")
 
     @patch("remotecalls.mongodb_facade.mongo_db_facade.get_user_by_id")
     def test_get_trends_user_not_found(self, mock_get_user_by_id):
