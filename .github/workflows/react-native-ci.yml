@@ -39,7 +39,7 @@ jobs:
       - name: Setup Gradle
         uses: gradle/gradle-build-action@v2
 
-      # Run Gradle tasks
-      - name: Run Gradle Build
+      # Run Gradle Custom Build Task
+      - name: Run Custom Build
         working-directory: VitalTrackApp
-        run: gradle build
+        run: gradle customBuild

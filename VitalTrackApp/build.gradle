@@ -80,7 +80,7 @@ task buildApk(type: Exec) {
     workingDir 'android'
 }
 
-task build {
+task customBuild {
     group = "build"
     description = "Build the project (Node.js and Android)"
     dependsOn installDependencies, generateGoogleServices, setupAndroidSdk, buildApk
