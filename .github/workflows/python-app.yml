@@ -14,39 +14,36 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # Checkout the repository
       - uses: actions/checkout@v4
 
+      # Set up Python 3.9
       - name: Set up Python 3.9
         uses: actions/setup-python@v3
         with:
           python-version: "3.9"
 
+      # Install dependencies using Makefile
       - name: Install dependencies
+        run: make install
         working-directory: VitalTrackServer
-        run: |
-          python -m pip install --upgrade pip
-          pip install flake8==4.0.1 pytest==7.0.1  # Pinning specific versions
-          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
+      # Set environment variables (requires GitHub Secrets)
       - name: Set environment variables
         env:
           MONGO_API_KEY: ${{ secrets.MONGO_API_KEY }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           FINED_TUNED_MODEL: ${{ secrets.FINED_TUNED_MODEL }}
           OPENAI_SYSTEM_MESSAGE: ${{ secrets.OPENAI_SYSTEM_MESSAGE }}
-
-        run: echo "variables set!"
-
-      - name: Lint with flake8
+        run: make set-env
         working-directory: VitalTrackServer
-        run: |
-          # stop the build if there are Python syntax errors or undefined names
-          flake8 . --exclude .venv --count --select=E9,F63,F7,F82 --show-source --statistics
-          # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
-          flake8 . --exclude .venv --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
 
-      - name: Test with pytest
+      # Lint Python code using Makefile
+      - name: Lint Python code
+        run: make lint
         working-directory: VitalTrackServer
-        run: |
-          export PYTHONPATH=$(pwd)/activity
-          python3 -m pytest
+
+      # Run Python unit tests using Makefile
+      - name: Run Python tests
+        run: make test
+        working-directory: VitalTrackServer
