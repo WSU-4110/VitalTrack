@@ -1,7 +1,7 @@
-import messaging from '@react-native-firebase/messaging';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import React, {useEffect} from 'react';
+import PushNotification from 'react-native-push-notification';
 import ProtectedRoute from './src/components/ProtectedRoute';
 import MyTabs from './src/components/navigationTabs'; // Import MyTabs
 import {AuthProvider, useAuth} from './src/contexts/AuthContext';
@@ -9,9 +9,10 @@ import AnalyticsScreen from './src/screens/Analytics';
 import CalendarScreen from './src/screens/Calendar';
 import EntriesScreen from './src/screens/Entries';
 import LoginScreen from './src/screens/Login';
+import MedicationsScreen from './src/screens/Medication';
 import SettingsScreen from './src/screens/Settings';
 import SignupScreen from './src/screens/Signup';
-import MedicationsScreen from './src/screens/Medication';
+import notificationHandler from './src/services/notificationHandler';
 
 const Stack = createStackNavigator();
 
@@ -45,7 +46,7 @@ function AppNavigator() {
       <Stack.Screen
         name="Settings"
         component={SettingsScreen}
-        options={{headerShown: false, tabBarStyle: {display: 'none'}}} // Hide tab bar
+        options={{headerShown: false, tabBarStyle: {display: 'none'}}}
       />
       <Stack.Screen
         name="Entries"
@@ -65,26 +66,44 @@ function AppNavigator() {
       <Stack.Screen
         name="Medication"
         component={MedicationsScreen}
-        options={{ headerShown: false }}
+        options={{headerShown: false}}
       />
     </Stack.Navigator>
   );
 }
 
 export default function App() {
-  async function requestUserPermission() {
-    const authStatus = await messaging().requestPermission();
-    const enabled =
-      authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
-      authStatus === messaging.AuthorizationStatus.PROVISIONAL;
-
-    if (enabled) {
-      console.log('Authorization status:', authStatus);
-    }
-  }
-
   useEffect(() => {
-    requestUserPermission();
+    PushNotification.cancelAllLocalNotifications();
+
+    const scheduleDailyReminder = () => {
+      const tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      tomorrow.setHours(10, 0, 0, 0);
+
+      notificationHandler.scheduleNotification({
+        title: 'Daily Health Check-in',
+        message: 'Time to log your daily health metrics and mood!',
+        date: tomorrow,
+        repeatType: 'day',
+      });
+    };
+
+    const scheduleWeeklySummary = () => {
+      const nextSunday = new Date();
+      nextSunday.setDate(nextSunday.getDate() + (7 - nextSunday.getDay()));
+      nextSunday.setHours(18, 0, 0, 0);
+
+      notificationHandler.scheduleNotification({
+        title: 'Weekly Health Summary',
+        message: 'Check your weekly health trends and progress!',
+        date: nextSunday,
+        repeatType: 'week',
+      });
+    };
+
+    scheduleDailyReminder();
+    scheduleWeeklySummary();
   }, []);
 
   return (
