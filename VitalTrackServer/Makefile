@@ -30,7 +30,7 @@ lint:
 # Run Python tests with pytest
 .PHONY: test
 test:
-	export PYTHONPATH=$(pwd)/activity && $(VENV_DIR)/bin/python -m pytest
+	export PYTHONPATH=$(pwd) && $(VENV_DIR)/bin/python -m pytest
 
 # Clean up virtual environment and temporary files
 .PHONY: clean
