@@ -1,82 +1,38 @@
-plugins {
-    id 'base'
-}
+apply plugin: 'com.android.application'
 
-ext {
-    nodeVersion = '18'
-    androidSdkVersion = '34'
-    buildToolsVersion = '34.0.0'
-    androidHome = "${System.env.HOME}/Android"
-}
+android {
+    compileSdkVersion 34
+    buildToolsVersion "34.0.0"
 
-task setupNode(type: Exec) {
-    group = "setup"
-    description = "Set up Node.js environment"
-    commandLine 'curl', '-fsSL', "https://deb.nodesource.com/setup_${nodeVersion}.x", '|', 'bash'
-}
+    defaultConfig {
+        applicationId "com.vitaltrackapp"
+        minSdkVersion 21
+        targetSdkVersion 34
+        versionCode 1
+        versionName "1.0"
 
-task installDependencies(type: Exec) {
-    group = "setup"
-    description = "Install Node.js dependencies using Yarn"
-    workingDir "${projectDir}/VitalTrackApp"
-    commandLine 'yarn'
-}
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
 
-task generateGoogleServices(type: Exec) {
-    group = "build"
-    description = "Generate google-services.json"
-    workingDir "${projectDir}/VitalTrackApp"
-    environment "FIREBASE_PROJECT_ID", System.getenv('FIREBASE_PROJECT_ID')
-    environment "FIREBASE_API_KEY", System.getenv('FIREBASE_API_KEY')
-    environment "FIREBASE_MOBILESDK_APP_ID", System.getenv('FIREBASE_MOBILESDK_APP_ID')
-    commandLine 'node', './scripts/generateGoogleServices.js'
-}
-
-task runTests(type: Exec) {
-    group = "test"
-    description = "Run unit tests using Jest"
-    workingDir "${projectDir}/VitalTrackApp"
-    commandLine 'npm', 'run', 'test'
-}
-
-task setupAndroidSdk(type: Exec) {
-    group = "setup"
-    description = "Install Android SDK command-line tools"
-    doLast {
-        println "Setting up Android SDK..."
-        exec {
-            commandLine 'sudo', 'apt-get', 'update'
+    buildTypes {
+        debug {
+            debuggable true
         }
-        exec {
-            commandLine 'sudo', 'apt-get', 'install', '-y', 'wget', 'unzip'
-        }
-        exec {
-            commandLine 'wget', "https://dl.google.com/android/repository/commandlinetools-linux-8092744_latest.zip"
-        }
-        exec {
-            commandLine 'mkdir', '-p', "$androidHome/cmdline-tools"
-        }
-        exec {
-            commandLine 'unzip', 'commandlinetools-linux-8092744_latest.zip', '-d', "$androidHome/cmdline-tools"
-        }
-        exec {
-            commandLine 'sdkmanager', '--sdk_root=$androidHome', '--licenses'
-        }
-        exec {
-            commandLine 'sdkmanager', '--sdk_root=$androidHome', "platform-tools", "platforms;android-${androidSdkVersion}", "build-tools;${buildToolsVersion}"
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
 }
 
-task buildApk(type: Exec) {
-    group = "build"
-    description = "Build Android APK using Gradle"
-    workingDir "${projectDir}/VitalTrackApp/android"
-    commandLine './gradlew', 'assembleDebug'
+dependencies {
+    implementation fileTree(dir: "libs", include: ["*.jar"])
+    implementation 'androidx.appcompat:appcompat:1.5.1'
+    implementation 'com.google.firebase:firebase-analytics:21.3.0'
+
+    testImplementation 'junit:junit:4.13.2'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.5'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
 }
 
-task customBuild {
-    group = "build"
-    description = "Build the React Native app and Android APK"
-    dependsOn setupNode, installDependencies, generateGoogleServices, runTests, setupAndroidSdk, buildApk
-}
+apply plugin: 'com.google.gms.google-services'
