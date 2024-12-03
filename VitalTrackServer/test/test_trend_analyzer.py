@@ -12,7 +12,7 @@ class TestTrendAnalyzer(unittest.TestCase):
             {"date": "2024-11-20", "well_being": "Great", "sleep_quality": "Good", "mood": "Great", "stress": "Low", "activity": ["gym", "yoga"]},
         ]
 
-    @patch("trend_analysis.print")
+    @patch("activity.trend_analysis.print")
     def test_prepare_data(self, mock_print):
         df = self.analyzer.prepare_data(self.mock_entries)
         self.assertEqual(len(df), 3)
