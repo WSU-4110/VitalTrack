@@ -1,4 +1,4 @@
-name: React Native Frontend CI
+name: React Native Frontend CI with Gradle
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
     branches: ["main"]
 
 jobs:
-  build:
+  build-and-test:
     runs-on: ubuntu-latest
 
     steps:
@@ -15,7 +15,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # Set up Node.js version 18
+      # Set up Node.js
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
@@ -26,6 +26,7 @@ jobs:
         run: yarn
         working-directory: VitalTrackApp
 
+      # Set up google-services.json
       - name: Set up google-services.json
         env:
           FIREBASE_PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID }}
@@ -59,7 +60,12 @@ jobs:
           sdkmanager --sdk_root=$ANDROID_HOME --licenses
           sdkmanager --sdk_root=$ANDROID_HOME "platform-tools" "platforms;android-34" "build-tools;34.0.0"
 
-      # Build Android APK
+      # Build Android APK with Gradle
       - name: Build Android APK
         run: ./gradlew assembleDebug
+        working-directory: VitalTrackApp/android
+
+      # Run Android Tests
+      - name: Run Android Instrumentation Tests
+        run: ./gradlew connectedAndroidTest
         working-directory: VitalTrackApp/android
